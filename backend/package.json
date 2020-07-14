@@ -1,0 +1,43 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "src",
+  "license": "MIT",
+  "author": {
+    "name": "Park Sujin",
+    "email": "show3rg@gmail.com"
+  },
+  "scripts": {
+    "start:dev": "nodemon src/",
+    "start": "node src/"
+  },
+  "dependencies": {
+    "@feathers-plus/batch-loader": "0.3.4",
+    "@feathersjs/authentication": "2.1.13",
+    "@feathersjs/authentication-jwt": "2.0.7",
+    "@feathersjs/authentication-local": "1.2.7",
+    "@feathersjs/authentication-oauth": "4.5.4",
+    "@feathersjs/commons": "3.0.1",
+    "@feathersjs/configuration": "4.5.3",
+    "@feathersjs/errors": "3.3.4",
+    "@feathersjs/express": "1.2.7",
+    "@feathersjs/feathers": "3.2.3",
+    "@feathersjs/socket-commons": "3.1.5",
+    "@feathersjs/socketio": "^3.2.7",
+    "@feathersjs/transport-commons": "4.1.6",
+    "cors": "^2.8.5",
+    "dauria": "1.1.4",
+    "feathers-authentication-hooks": "0.3.1",
+    "feathers-blob": "^2.2.0",
+    "feathers-hooks-common": "4.19.4",
+    "feathers-mongodb": "3.4.0",
+    "feathers-mongodb-fuzzy-search": "^1.1.1",
+    "feathers-mongoose": "6.3.0",
+    "mongoose": "^5.9.20"
+  },
+  "devDependencies": {
+    "bcrypt": "^5.0.0",
+    "fs-blob-store": "^5.2.1",
+    "multer": "^1.4.2"
+  }
+}
