@@ -103,7 +103,7 @@ function SidebarComponent({
             <NavBox
               currentPath={String(currentPath).includes("/home") ? true : false}
             >
-              <PieChartOutlined style={IconStyle} />
+              <AppstoreOutlined style={IconStyle} />
               <Nav>Dashboard</Nav>
             </NavBox>
           </LinkStyled>
@@ -120,6 +120,19 @@ function SidebarComponent({
             <Nav>Board</Nav>
           </NavBox>
         </LinkStyled>}
+        {user && user.role.includes("super") ? 
+
+          <LinkStyled to="/backup">
+            <NavBox
+              currentPath={
+                String(currentPath).includes("/backup") ? true : false
+              }
+            >
+              <PieChartOutlined style={IconStyle} />
+              <Nav>Backup</Nav>
+            </NavBox>
+          </LinkStyled>
+          : ''}
           {user && user.role.includes("super") ? 
 
           <LinkStyled to="/setting">

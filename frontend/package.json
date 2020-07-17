@@ -8,7 +8,9 @@
     "build": "webpack --mode production"
   },
   "dependencies": {
+    "@feathersjs/authentication": "2.1.13",
     "@feathersjs/authentication-client": "1.0.8",
+    "@feathersjs/configuration": "4.5.3",
     "@feathersjs/feathers": "3.2.3",
     "@feathersjs/rest-client": "1.4.5",
     "@feathersjs/socket-commons": "3.1.5",
@@ -42,7 +44,9 @@
     "html-webpack-plugin": "^4.3.0",
     "mini-css-extract-plugin": "^0.9.0",
     "moment": "^2.27.0",
+    "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
+    "socket.io-client": "^2.3.0",
     "style-loader": "^1.2.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12",

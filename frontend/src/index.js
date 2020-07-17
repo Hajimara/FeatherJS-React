@@ -9,11 +9,21 @@ import thunk from "redux-thunk";
 import rootReducer from "./modules/index";
 import Cookies from "universal-cookie";
 import { checkThunk } from "./modules/auth";
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import { PersistGate } from 'redux-persist/integration/react';
+
+const persistConfig = {
+  key: 'root',
+  storage
+};
+const enhancedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = createStore(
-  rootReducer,
+  enhancedReducer,
   composeWithDevTools(applyMiddleware(thunk))
 );
+const persistor = persistStore(store);
 
 function userLoader() {
   try {
@@ -29,9 +39,11 @@ userLoader();
 
 ReactDOM.render(
   <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
     <BrowserRouter>
       <App />
     </BrowserRouter>
+    </PersistGate>
   </Provider>,
   document.getElementById("root")
 );

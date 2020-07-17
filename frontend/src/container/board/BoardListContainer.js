@@ -103,11 +103,7 @@ function BoardListContainer() {
       sort: sort,
       searchType: searchType,
     };
-    if (data.search === "" || data.searchType === "") {
-      message.warning("검색어와 검색타입을 함께 선택해주세요.");
-    } else {
       dispatch(boardFindAllThunk(data));
-    }
   };
   const onChangeSearchType = (e) => {
     setSearchType(e);

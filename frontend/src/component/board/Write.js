@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
-import { Button, Input, Select, Upload, List, Spin } from "antd";
+import { Button, Input, Select, Upload, List, Spin, Progress } from "antd";
 import Quill from "quill";
 import "quill/dist/quill.bubble.css";
 import { CloseSquareOutlined } from "@ant-design/icons";
@@ -15,7 +15,11 @@ const Area = styled.div`
   margin-bottom: 40px;
 `;
 
-
+const ProgressBar = styled(Progress)`
+  position: absolute;
+  top:50%;
+  left:45%;
+`;
 const TopArea = styled.div`
   display: flex;
   width: 100%;
@@ -38,10 +42,11 @@ const AreaWrapper = styled.div`
   flex-direction: column;
   margin: 0 70px;
   /* border: 1px solid rgba(0, 0, 0, 0.125); */
+  position:relative;
 `;
 const WriteTitleBox = styled.div`
   margin: 20px 0 0 0;
-  border-radius: 3px;
+  /* border-radius: 3px; */
   width: auto;
   height: 32px;
   display: flex;
@@ -57,8 +62,8 @@ const WriteTitle = styled(Input)`
 
 const WriteFileBox = styled.div`
   margin: 20px 0 0 0;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-radius: 3px;
+  /* border-bottom: 1px solid rgba(0, 0, 0, 0.125); */
+  /* border-radius: 3px; */
   width: 100%;
   height: 10%;
 `;
@@ -176,7 +181,7 @@ function Write({
           // [{ header: "1" }, { header: "2" }],
           ["bold", "italic", "underline", "strike"],
           [{ list: "ordered" }, { list: "bullet" }],
-          ["blockquote", "link"],
+          ["blockquote", "link"]
         ],
       },
     });
@@ -213,8 +218,18 @@ function Write({
         <TitleBox>
           <Title>Write</Title>
         </TitleBox>
+       
       </TopArea>
       <AreaWrapper>
+      {/* <ProgressBar
+      type='circle'
+      strokeColor={{
+        '0%': '#108ee9',
+        '100%': '#87d068',
+      }}
+      percent={50}
+      status="active"
+    /> */}
       <Spin spinning={writeLoading && writeLoading === true ? true : false} tip={'loading...'}>
         <WriteTitleBox>
           <WriteTitle
@@ -262,14 +277,13 @@ function Write({
                 setFileList(fileList.concat(file));
                 return false; // 파일 선택시 바로 업로드 하지 않고 후에 한꺼번에 전송하기 위함
               }}
-              fileList={fileList}
-              defaultFileList={[...fileList]}
-              accept={'.csv, .txt, image/*'}
+              // fileList={fileList}
+              // defaultFileList={[...fileList]}
               onRemove={onFileRemove}
             >
               <div style={{display:'flex', justifyContent:  'center',  width: '100%', margin: '0 auto'}}>
               <div><p style={{textAlign: 'center', padding: '15px'}} className="ant-upload-text">
-                파일 형식은 txt, csv, png, jpeg, jpg만 업로드 가능합니다. <br/>
+                파일을 업로드 해주세요. <Button>업로드</Button> <br/>
               </p></div>
               </div>
              
@@ -285,7 +299,7 @@ function Write({
                   if(item.isDeleted){
                     return;
                   }
-
+                  
                   return (
                   <ListLine
                     active={

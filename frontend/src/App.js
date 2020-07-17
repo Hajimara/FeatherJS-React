@@ -14,6 +14,7 @@ import WriteRoute from "./authorization/WriteRoute";
 import { useSelector, useDispatch } from "react-redux";
 import { checkThunk } from "./modules/auth";
 import NotFound from "./authorization/NotFound";
+import BackupPage from "./page/BackupPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -64,6 +65,11 @@ function App() {
         role={user ? user.role : ""}
         component={WritePage}
         path="/write/:boardId"
+      />
+      <AdminRoute
+        role={user ? user.role : ""}
+        component={BackupPage}
+        path="/backup"
       />
       <Route component={MyProfilePage} path="/myProfile" />
       <Route component={NotFound} />

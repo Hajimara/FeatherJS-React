@@ -33,7 +33,9 @@
     "feathers-mongodb": "3.4.0",
     "feathers-mongodb-fuzzy-search": "^1.1.1",
     "feathers-mongoose": "6.3.0",
-    "mongoose": "^5.9.20"
+    "jsonfile": "^6.0.1",
+    "mongoose": "^5.9.20",
+    "node-zip": "^1.1.1"
   },
   "devDependencies": {
     "bcrypt": "^5.0.0",

@@ -6,6 +6,7 @@ import { message } from "antd";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { boardFindOneThunk, boardInitialize } from "../../modules/board";
 import Fobidden from "../../authorization/Fobidden";
+
 const titleRegExp = /^.{4,60}$/;
 const bodyRegExp = /^.{10,2000}$/;
 
@@ -47,6 +48,32 @@ function WriteContainer() {
     }
   }, []);
 
+  // useEffect(() => {
+  //   if(writeLoading){
+  //   console.log('d');
+
+  //     var xhr = new window.XMLHttpRequest();
+  //     // upload progress
+  //     console.log(xhr);
+      
+  //     xhr.addEventListener(
+  //       "progress",
+  //       function (evt) {
+  //         console.log(evt);
+          
+  //         if (evt.lengthComputable) {
+  //           var percentComplete = evt.loaded / evt.total;
+  //           console.log(
+  //             "upload progress: ",
+  //             Math.round(percentComplete * 100) + "%"
+  //           );
+  //         }
+  //       },
+  //       false
+  //     );
+  //   }
+  // },[writeLoading]);
+
   useEffect(() => {
     // 권한 없을 시 바로 팅구기
     // 어드민 제외 자기 게시물 아닐 경우 바로 팅구기
@@ -54,8 +81,6 @@ function WriteContainer() {
       // write
       if (user.role.includes("super") || user.role.includes("c")) {
         if (match.path === "/write/:boardId") {
-         
-          
           if (boardFindOne) {
             if (
               user.role.includes("super") ||
@@ -71,21 +96,31 @@ function WriteContainer() {
         }
         return;
       } else {
-        if (match.path === "/write"){
-        // message.warning("권한이 없는 사용자는 접근 불가합니다.");
-        // history.push("/");
-              return <Fobidden />;
+        if (match.path === "/write") {
+          // message.warning("권한이 없는 사용자는 접근 불가합니다.");
+          // history.push("/");
+          return <Fobidden />;
+        }
       }
-    }
     }
   }, [user, boardFindOne]);
 
   useEffect(() => {
-    if (response) {
-      history.push("/board");
-      message.success("게시물을 등록하였습니다.");
-      return;
+    if(boardFindOne){
+      if (response) {
+        history.push(`/board/${response._id}`);
+        message.success("게시물을 등록하였습니다.");
+        return;
+      }
+    }else if(!boardFindOne){
+      if (response) {
+        console.log(response._id);
+        history.push(`/board`);
+        message.success("게시물을 등록하였습니다.");
+        return;
+      }
     }
+    
     if (String(error).includes("Unauthorized user")) {
       console.log(error);
       message.error("게시물 등록 권한이 없습니다.");
@@ -94,6 +129,11 @@ function WriteContainer() {
     if (String(error).includes("File too large")) {
       console.log(error);
       message.error("파일 크기는 5MB로 제한되어있습니다.");
+      return;
+    }
+    if (String(error).includes("File not found.")) {
+      console.log(error);
+      message.error("파일을 찾을 수 없습니다.");
       return;
     }
     if (error) {

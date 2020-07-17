@@ -28,6 +28,19 @@ export const boardFindAllApi = (data = 1) => {
       },
     });
   }
+  if (data === "backup") {
+    return board.find({
+      headers: {
+        Authorization: "Bearer " + cookies.get("access_token"),
+        "Content-Type": "application/json",
+      },
+      query: {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    });
+  }
 
   if(data.sort === ''){
     data.sort = 'createdAt';
@@ -57,6 +70,9 @@ export const boardFindAllApi = (data = 1) => {
       },
     });
   } else {
+    if(data.searchType ===''){
+      data.searchType='title'
+    }
     if(data.searchType === 'title' ||data.searchType === 'body'||data.searchType === 'category'){
       return board.find({
         headers: {

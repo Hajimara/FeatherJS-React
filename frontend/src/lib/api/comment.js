@@ -36,6 +36,19 @@ export const writeCommentApi = (data) => {
 };
 
 export const findAllCommentApi = (data) => {
+  if(data ==='backup'){
+    return comment.find({
+      headers: {
+        Authorization: "Bearer " + cookies.get("access_token"),
+        "Content-Type": "application/json",
+      },
+      query: {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    });
+  }
   let page = null;
   if (data.page > 1) {
     page = data.page;
@@ -116,12 +129,15 @@ export const removeCommentApi = (data) => {
 };
 
 export const childfindAllCommentApi = (data) => {
-    let page = null;
-    if (data.page > 1) {
-      page = data.page;
-    } else {
-      page = 1;
-    }
+  
+ 
+
+  let page = null;
+  if (data.page > 1) {
+    page = data.page;
+  } else {
+    page = 1;
+  }
     return comment.find({
       query: {
         parentComment: {

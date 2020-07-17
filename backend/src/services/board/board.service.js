@@ -1,6 +1,7 @@
 const createService = require("feathers-mongoose");
 const createModel = require("../../models/board.model");
 const hooks = require("./board.hooks");
+const errors = require("@feathersjs/errors");
 var fs = require("fs");
 var path = require("path");
 const multer = require("multer");
@@ -74,15 +75,45 @@ module.exports = (app) => {
           }
           // console.log(stream);
           if(stream){
-            console.log(req);
-            if(String(req.query.serverFileName).includes('png')){
+            console.log(req.query.serverFileName);
+            if(String(req.query.serverFileName).includes('.png')){
               _res.writeHead(200, {
                 'Content-Type': 'image/png',
                 'Content-Disposition': 'attachment; filename=' 
               });
-            }else if(String(req.query.serverFileName).includes('jpg') || String(req.query.serverFileName).includes('jpg')){
+            }else if(String(req.query.serverFileName).includes('.jpeg') || String(req.query.serverFileName).includes('.jpg')){
               _res.writeHead(200, {
                 'Content-Type': 'image/jpeg',
+                'Content-Disposition': 'attachment; filename=' 
+              });
+            }else if(String(req.query.serverFileName).includes('.doc')){
+              _res.writeHead(200, {
+                'Content-Type': 'application/msword',
+                'Content-Disposition': 'attachment; filename=' 
+              });
+            }else if(String(req.query.serverFileName).includes('.pdf') ){
+              _res.writeHead(200, {
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': 'attachment; filename=' 
+              });
+            }else if(String(req.query.serverFileName).includes('.xls') || String(req.query.serverFileName).includes('.xlsx')){
+              _res.writeHead(200, {
+                'Content-Type': 'application/vnd.ms-excel',
+                'Content-Disposition': 'attachment; filename=' 
+              });
+            }else if(String(req.query.serverFileName).includes('.zip')){
+              _res.writeHead(200, {
+                'Content-Type': 'application/zip',
+                'Content-Disposition': 'attachment; filename=' 
+              });
+            }else if(String(req.query.serverFileName).includes('.js')){
+              _res.writeHead(200, {
+                'Content-Type': 'application/x-javascript',
+                'Content-Disposition': 'attachment; filename=' 
+              });
+            }else if(String(req.query.serverFileName).includes('.json')){
+              _res.writeHead(200, {
+                'Content-Type': 'application/json',
                 'Content-Disposition': 'attachment; filename=' 
               });
             }else{
@@ -92,14 +123,12 @@ module.exports = (app) => {
               });
             }
 
-            
-            // _res.contentType('image/png')
-            // _res.end();
             stream.pipe(_res);
             return;
           }else { 
             _res.statusCode = 404;
             _res.end();
+            throw new errors.NotFound("File not found.");
           }
         }
         

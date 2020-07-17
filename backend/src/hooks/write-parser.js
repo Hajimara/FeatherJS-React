@@ -38,7 +38,7 @@ module.exports = (option = {}) => {
                       fileArray[j].serverFileName
                     );
                     fs.unlink(filePath, function (err) {
-                      if (err) throw err;
+                      if (err) throw new errors.NotFound("File not found.");
                       console.log("file deleted");
                     });
                   }
@@ -80,10 +80,21 @@ module.exports = (option = {}) => {
                 "/upload",
                 boardInfo.file[index].serverFileName
               );
-              fs.unlink(filePath, function (err) {
-                if (err) throw err;
-                console.log("file deleted");
-              });
+              try {
+                fs.unlink(filePath, function (err) {
+                  if (err) {
+                  console.log("File not found");
+                  }
+                  console.log("file deleted");
+                });
+              } catch (error) {
+                throw new errors.NotFound("File not found.");
+              }
+              // fs.unlink(filePath, function (err) {
+              //   if (err) {
+              //   }
+              //   console.log("file deleted");
+              // });
             }
           }
         }
