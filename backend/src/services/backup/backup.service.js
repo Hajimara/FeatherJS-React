@@ -1,5 +1,6 @@
 const createService = require("./backup.class");
 const hooks = require("./backup.hooks");
+const backupModule = require('../../middleware/backup');
 
 module.exports = (app) => {
   const paginate = app.get("paginate");
@@ -8,9 +9,10 @@ module.exports = (app) => {
     paginate,
   };
 
-  app.use("/backup", createService(options));
+  app.use("/backup", backupModule,createService(options));
   
   const service = app.service("backup");
+  
   service.setup(app);
 
   service.hooks(hooks);

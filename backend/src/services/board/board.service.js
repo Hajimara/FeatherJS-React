@@ -122,7 +122,7 @@ module.exports = (app) => {
                 'Content-Disposition': 'attachment; filename=' 
               });
             }
-
+            
             stream.pipe(_res);
             return;
           }else { 

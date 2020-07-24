@@ -1,4 +1,5 @@
 const { authenticate } = require("@feathersjs/authentication").hooks;
+const backup = require('../../hooks/backup-file');
 module.exports = {
   before: {
     all: [authenticate("jwt"),],

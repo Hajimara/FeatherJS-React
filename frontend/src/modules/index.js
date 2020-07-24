@@ -7,6 +7,7 @@ import write from "./write";
 import comment from "./comment";
 import childComment from "./childComment";
 import notice from "./notice";
+import backup from "./backup";
 
 const rootReducer = combineReducers({
   loading,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   write,
   comment,
   childComment,
+  backup,
   notice
 });
 

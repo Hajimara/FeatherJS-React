@@ -108,17 +108,8 @@ export const patchCommentApi = (data) => {
 };
 
 export const removeCommentApi = (data) => {
-  return comment.patch(
+  return comment.remove(
     data.patchId,
-    {
-      author: {
-        _id: data.author._id,
-        email: data.author.email,
-        username: data.author.username,
-        image: data.author.image
-      },
-      isDeleted: true,
-    },
     {
       headers: {
         Authorization: "Bearer " + cookies.get("access_token"),

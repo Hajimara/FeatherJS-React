@@ -34,6 +34,7 @@
     "feathers-mongodb-fuzzy-search": "^1.1.1",
     "feathers-mongoose": "6.3.0",
     "jsonfile": "^6.0.1",
+    "mime": "^2.4.6",
     "mongoose": "^5.9.20",
     "node-zip": "^1.1.1"
   },

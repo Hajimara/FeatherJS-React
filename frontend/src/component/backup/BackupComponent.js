@@ -38,8 +38,8 @@ const AreaWrapper = styled.div`
 
 const ButtonBox = styled.div``;
 const ButtonWrapper = styled.div``;
-const ButtonStyled= styled(Button)`
-    margin: 10px 10px 0 0 ;
+const ButtonStyled = styled(Button)`
+  margin: 10px 10px 0 0;
 `;
 const MiddleArea = styled.div`
   display: flex;
@@ -47,14 +47,20 @@ const MiddleArea = styled.div`
   background-color: white;
   position: relative;
   margin: 20px 70px;
-    flex-direction: column;
-    p {
-        font-size:20px;
-        margin-bottom: 10px;
-    }
+  flex-direction: column;
+  p {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
 `;
 
-function BackupComponent({ boardFindAllTotal, findAllCommentTotal,fileCount }) {
+function BackupComponent({
+  boardFindAllTotal,
+  findAllCommentTotal,
+  fileCount,
+  onBackupDownload,
+  user
+}) {
   return (
     <>
       <Area>
@@ -65,16 +71,25 @@ function BackupComponent({ boardFindAllTotal, findAllCommentTotal,fileCount }) {
         </TopArea>
         <AreaWrapper>
           <MiddleArea>
-            {boardFindAllTotal ? <p>게시물 총 개수 : {boardFindAllTotal}개</p> : ""}
+            {boardFindAllTotal ? (
+              <p>게시물 총 개수 : {boardFindAllTotal}개</p>
+            ) : (
+              ""
+            )}
             <br />
-            {findAllCommentTotal ? <p>댓글 총 개수 : {findAllCommentTotal}개</p> : ""}
+            {findAllCommentTotal ? (
+              <p>댓글 총 개수 : {findAllCommentTotal}개</p>
+            ) : (
+              ""
+            )}
             <br />
             {fileCount ? <p>파일 총 개수 : {fileCount}개</p> : ""}
             <ButtonWrapper>
-                <ButtonBox>
-                    <ButtonStyled>백업</ButtonStyled>
-                    <ButtonStyled>복구</ButtonStyled>
-                </ButtonBox>
+              <ButtonBox>
+                {/* <ButtonStyled onClick={onBackupDownload}>백업</ButtonStyled> */}
+                <a href={`http://localhost:3030/backup/${user._id}`}><ButtonStyled>백업</ButtonStyled></a>
+                <ButtonStyled>복구</ButtonStyled>
+              </ButtonBox>
             </ButtonWrapper>
           </MiddleArea>
         </AreaWrapper>

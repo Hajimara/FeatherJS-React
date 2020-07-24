@@ -5,6 +5,7 @@ import { message } from "antd";
 import { boardInitialize, boardFindAllThunk } from "../../modules/board";
 import { commentInitialize, findAllCommentThunk } from "../../modules/comment";
 import { childFindAllCommentThunk } from "../../modules/childComment";
+import { backupDownloadThunk } from "../../modules/backup";
 
 function BackupContainer() {
   const dispatch = useDispatch();
@@ -53,11 +54,23 @@ function BackupContainer() {
           setFileCount(count)
       }
   },[boardFindAll])
+
+  const onBackupDownload = () => {
+    try {
+      dispatch(backupDownloadThunk(user));
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
   return (
     <BackupComponent
       boardFindAllTotal={boardFindAllTotal}
       findAllCommentTotal={findAllCommentTotal}
       fileCount={fileCount}
+      onBackupDownload={onBackupDownload}
+      user={user}
     />
   );
 }

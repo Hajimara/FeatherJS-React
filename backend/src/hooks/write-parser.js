@@ -3,6 +3,11 @@ const fs = require("fs");
 const path = require("path");
 module.exports = (option = {}) => {
   return async (context) => {
+    if(context.method==='find'){
+      if(!context.hasOwnProperty('data')){
+        return context;
+      }
+    }
     if (
       context.method === "get" ||
       !Object.prototype.hasOwnProperty.call(context.data, "views")
