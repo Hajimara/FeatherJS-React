@@ -8,7 +8,7 @@
     "email": "show3rg@gmail.com"
   },
   "scripts": {
-    "start:dev": "nodemon src/",
+    "start:dev": "nodemon src/ --ignore 'backup_file/*' ",
     "start": "node src/"
   },
   "dependencies": {

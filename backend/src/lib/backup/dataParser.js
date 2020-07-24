@@ -53,7 +53,7 @@ module.exports = async (dataStructure, id) => {
                   fileData.serverFileName
                 );
                 // 파일
-                const binaryString = fs.readFileSync(filePath);
+                let binaryString = fs.readFileSync(filePath);
                 console.log(dataStructure[item][n-1][objItem][index]);
                 dataStructure[item][n-1][objItem][index].binary = binaryString;
               });
@@ -78,7 +78,7 @@ module.exports = async (dataStructure, id) => {
       return n * fileRecursion(documentObj, n - 1);
     }
   }
-  console.log(jsonDocument);
+  // console.log(jsonDocument);
   return jsonDocument;
 };
 

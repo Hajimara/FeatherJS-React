@@ -29,13 +29,11 @@ module.exports = async (req, res, next) => {
 
     if (fileExists && stream) {
       res.writeHead(200, {
-                    "Content-Type": "application/zip",
-                    "Content-Disposition": "attachment; filename="+res.hook.data.filename,
+                    "Content-Type": mimetype,
+                    "Content-Disposition": "attachment; filename="+zipFileName,
                   });
         
-        stream.pipe(res).pipe()
-              res.end();
-              return;
+       
       // res.type("zip");
       // return res.download(zipFilePath, zipFileName, function (err) {
       //   if (err) {
@@ -56,6 +54,8 @@ module.exports = async (req, res, next) => {
     }
     // header 설정 및 전송
     // res.end();
+    stream.pipe(res)
+    return;
     // return;
   }
   next();
