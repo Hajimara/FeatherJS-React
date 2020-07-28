@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start:dev": "nodemon src/ --ignore 'backup_file/*' ",
-    "start": "node src/"
+    "start": "node src/",
+    "start:debug": "node --inspect src/ "
   },
   "dependencies": {
     "@feathers-plus/batch-loader": "0.3.4",
@@ -25,6 +26,7 @@
     "@feathersjs/socket-commons": "3.1.5",
     "@feathersjs/socketio": "^3.2.7",
     "@feathersjs/transport-commons": "4.1.6",
+    "archiver": "^5.0.0",
     "cors": "^2.8.5",
     "dauria": "1.1.4",
     "feathers-authentication-hooks": "0.3.1",

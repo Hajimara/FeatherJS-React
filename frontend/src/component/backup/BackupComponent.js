@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Button } from "antd";
+import { Button, Upload } from "antd";
 const Area = styled.div`
   display: flex;
   width: 100%;

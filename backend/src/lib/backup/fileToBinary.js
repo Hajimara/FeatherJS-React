@@ -12,7 +12,6 @@ const fs = require('fs');
     fs.createWriteStream
     console.log(readFile);
     console.log(stream);
-    
  }
 
 //  let bufferFile = fs.readFileSync('./1594887015286-스크린샷 2020-07-13 오전 11.23.21.png');

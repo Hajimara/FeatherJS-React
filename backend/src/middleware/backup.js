@@ -16,47 +16,30 @@ module.exports = async (req, res, next) => {
     const serviceData = await getService(req, user);
     const parserData = await dataParser(serviceData);
     const fileInfo = await fileConverter(parserData);
-    const zipFile = await createCompressedFile(fileInfo);
+    const zipFile =  await createCompressedFile(fileInfo, res);
 
-    let zipFilePath = zipFile.zipFilePath;
-    let zipFileName = zipFile.filename;
+    // let zipFilePath = zipFile.zipFilePath;
+    // let zipFileName = zipFile.filename;
 
-    let stream;
-    // 경로 체크 및 스트림으로 생성
-    let mimetype = mime.getType(zipFilePath);
-    let fileExists = fs.existsSync(zipFilePath);
-    stream = fs.createReadStream(zipFilePath);
+    // let stream;
+    // // 경로 체크 및 스트림으로 생성
+    // let mimetype = mime.getType(zipFilePath);
+    // let fileExists = fs.existsSync(zipFilePath);
+    // stream = fs.createReadStream(zipFilePath);
 
-    if (fileExists && stream) {
-      res.writeHead(200, {
-                    "Content-Type": mimetype,
-                    "Content-Disposition": "attachment; filename="+zipFileName,
-                  });
-        
-       
-      // res.type("zip");
-      // return res.download(zipFilePath, zipFileName, function (err) {
-      //   if (err) {
-      //     // 에러 처리
-      //     console.log(err);
-      //     res.statusCode = 404;
-      //     res.end();
-      //     throw new errors.NotFound("File not found.");
-      //   } else {
-      //     // 성공
-      //     console.log("success");
-      //   }
-      // });
-    } else {
-      res.statusCode = 404;
-      res.end();
-      throw new errors.NotFound("File not found.");
-    }
-    // header 설정 및 전송
-    // res.end();
-    stream.pipe(res)
+    // if (fileExists && stream) {
+    //   res.writeHead(200, {
+    //                 "Content-Type": mimetype,
+    //                 "Content-Disposition": "attachment; filename="+zipFileName,
+    //               });
+    // } else {
+    //   res.statusCode = 404;
+    //   res.end();
+    //   throw new errors.NotFound("File not found.");
+    // }
+  
+    // stream.pipe(res)
     return;
-    // return;
   }
   next();
 };

@@ -1,21 +1,54 @@
-const jsonfile = require("jsonfile");
+// const jsonfile = require("jsonfile");
 const fs = require("fs");
 const path = require("path");
 
 module.exports = async (data) => {
-    let filename = String(new Date().getTime()).toString() + "_fileConverter.json";
-  let filePath = path.join(
-    __dirname,
-    "/../../..",
-    "/backup_file",
-    filename,
-  );
+  let filename =
+    String(new Date().getTime()).toString() + "_fileConverter.json";
+  let filePath = path.join(__dirname, "/../../..", "/backup_file", filename);
+  var output = fs.createWriteStream(filePath);
   try {
-    fs.writeFileSync(filePath, JSON.stringify(data), (error) => {
-      if (error) console.log(error);
-    });
+    
+    // fs.writeFileSync(filePath, JSON.stringify(data), (error) => {
+    //   if (error) console.log(error);
+    // });
+    output.write(JSON.stringify(data),'utf-8');
+
+    output.end();
+
+    output.on('finish', function() {
+      output.bytesWritten
+      console.log("Write completed.");
+   });
+   
+   output.on('error', function(err) {
+      console.log(err.stack);
+   });
+
   } catch (error) {
     console.log(error);
   }
-  return {filePath,filename};
+  return { filePath, filename };
 };
+
+
+
+
+
+
+
+
+// module.exports = async (data) => {
+//   let filename =
+//     String(new Date().getTime()).toString() + "_fileConverter.json";
+//   let filePath = path.join(__dirname, "/../../..", "/backup_file", filename);
+//   try {
+    
+//     fs.writeFileSync(filePath, JSON.stringify(data), (error) => {
+//       if (error) console.log(error);
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+//   return { filePath, filename };
+// };
