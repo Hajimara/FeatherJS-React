@@ -58,8 +58,11 @@ function BackupComponent({
   boardFindAllTotal,
   findAllCommentTotal,
   fileCount,
-  onBackupDownload,
-  user
+  user,
+  onFileRemove,
+  setRestoreFile,
+  restoreFile,
+  onSubmit,
 }) {
   return (
     <>
@@ -87,8 +90,27 @@ function BackupComponent({
             <ButtonWrapper>
               <ButtonBox>
                 {/* <ButtonStyled onClick={onBackupDownload}>백업</ButtonStyled> */}
-                <a href={`http://localhost:3030/backup/${user._id}`}><ButtonStyled>백업</ButtonStyled></a>
-                <ButtonStyled>복구</ButtonStyled>
+                <a href={`http://localhost:3030/backup/${user._id}`}>
+                  <ButtonStyled>백업</ButtonStyled>
+                </a>
+                <Upload
+                  name="file"
+                  fileList={restoreFile}
+                  multiple={false}
+                  beforeUpload={(file) => {
+                    setRestoreFile([file]);
+                    return false;
+                  }}
+                  onRemove={onFileRemove}
+                >
+                  <ButtonStyled>복구 파일 업로드</ButtonStyled>
+                  
+                </Upload>
+                {restoreFile && String(restoreFile).toString() !== "" ? (
+                    <ButtonStyled onClick={onSubmit}>복구 요청</ButtonStyled>
+                  ) : (
+                    ""
+                  )}
               </ButtonBox>
             </ButtonWrapper>
           </MiddleArea>

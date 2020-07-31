@@ -8,7 +8,7 @@
     "email": "show3rg@gmail.com"
   },
   "scripts": {
-    "start:dev": "nodemon src/ --ignore 'backup_file/*' ",
+    "start:dev": "nodemon src/ --ignore 'backup_file/*' --ignore 'restore-file/*' ",
     "start": "node src/",
     "start:debug": "node --inspect src/ "
   },
@@ -35,10 +35,13 @@
     "feathers-mongodb": "3.4.0",
     "feathers-mongodb-fuzzy-search": "^1.1.1",
     "feathers-mongoose": "6.3.0",
+    "form-data": "^3.0.0",
     "jsonfile": "^6.0.1",
     "mime": "^2.4.6",
     "mongoose": "^5.9.20",
-    "node-zip": "^1.1.1"
+    "node-zip": "^1.1.1",
+    "stream-json": "^1.7.0",
+    "unzipper": "^0.10.11"
   },
   "devDependencies": {
     "bcrypt": "^5.0.0",

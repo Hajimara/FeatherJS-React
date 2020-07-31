@@ -129,5 +129,5 @@ sketch
 upload/
 upload-image/
 backup_file/
-
+restore-file/
 # End of https://www.toptal.com/developers/gitignore/api/node,react

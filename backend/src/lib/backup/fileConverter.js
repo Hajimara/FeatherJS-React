@@ -17,7 +17,6 @@ module.exports = async (data) => {
     output.end();
 
     output.on('finish', function() {
-      output.bytesWritten
       console.log("Write completed.");
    });
    

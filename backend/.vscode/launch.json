@@ -7,11 +7,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "프로그램 시작",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/index.js"
+            "program": "${workspaceFolder}/backend/src/index.js"
         }
     ]
 }
