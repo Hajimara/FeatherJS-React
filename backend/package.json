@@ -35,7 +35,7 @@
     "feathers-mongodb": "3.4.0",
     "feathers-mongodb-fuzzy-search": "^1.1.1",
     "feathers-mongoose": "6.3.0",
-    "form-data": "^3.0.0",
+    "formdata-node": "^2.2.2",
     "jsonfile": "^6.0.1",
     "mime": "^2.4.6",
     "mongoose": "^5.9.20",

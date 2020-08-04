@@ -7,11 +7,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "프로그램 시작",
+            "name": "node.js debug",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/backend/src/index.js"
+            "program": "${workspaceFolder}/src/index.js"
         }
     ]
 }

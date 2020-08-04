@@ -12,6 +12,30 @@ module.exports = (option = {}) => {
       context.method === "get" ||
       !Object.prototype.hasOwnProperty.call(context.data, "views")
     ) {
+      if(context.method === 'create' && String(context.params.headers.referer).includes('backup')){
+        console.log(context.data.entries());
+        console.log(context.data.get('email'));
+        const author = {
+          _id: context.data.get('user_id'),
+          email: context.data.get('email'),
+          username: context.data.get('username'),
+          image: context.data.get('image'),
+        };
+        if(context.data.get('files')){
+          console.log(context.data.get('files'));
+        }
+        context.data._id= context.data.get('_id')
+        context.data.views= context.data.get('views')
+        context.data.title= context.data.get('title')
+        context.data.body=context.data.get('body')
+        context.data.category=context.data.get('category')
+        context.data.createdAt = context.data.get('createdAt')
+        // context.data.file = 
+
+
+        context.data.author = author;
+        return context;
+      }
       if (context.method === "create" || context.method === "update") {
         const author = {
           _id: context.data.user_id,

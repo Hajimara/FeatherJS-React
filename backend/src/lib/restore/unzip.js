@@ -4,13 +4,16 @@ const path = require("path");
 const unzipper = require("unzipper");
 module.exports = async (file) => {
   const fileName = file.filename;
-  const filePath = path.join(__dirname, "../../../../", file.destination+'/');
+  const filePath = path.join(__dirname, "../../../", file.destination+'/');
+  // const filePath = path.join(__dirname, "../../../../", file.destination+'/');
+  console.log(filePath);
+  
   const fileFullPath = path.join(
-    __dirname,
-    "../../../",
-    file.destination,
+    filePath,
     fileName
   );
+  console.log(fileFullPath);
+  
   let fp;
   const zip = fs.createReadStream(fileFullPath).pipe(unzipper.Parse({forceStream: true}));
   for await (const entry of zip) {

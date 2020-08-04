@@ -1,3 +1,7 @@
+/**
+ * 백업에 필요한 데이터를 가져와 객체안에 담는 작업을 하는 함수이다.
+ */
+
 module.exports = async (req,user) => {
   let board = null;
   let comment = null;

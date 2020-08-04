@@ -1,107 +1,23 @@
-const FormData = require("form-data");
-const bufferToStream= require('./bufferToStream');
-module.exports = (user, req, serviceData, jsonParserData) => {
-  console.log(user, req, serviceData, jsonParserData);
+const { ObjectID } = require("mongodb");
+/**
+ * 이미 존재하는 데이터는 skip 하도록 하고
+ * 존재하지 않는 데이터는 create서비스를 호출하도록
+ * 데이터를 선별하는 함수이다.
+ */
+module.exports = (serviceData, jsonParserData) => {
   for (const serviceKey in serviceData) {
     for (const parserDataKey in jsonParserData) {
       if (serviceKey === parserDataKey) {
         serviceData[serviceKey].map((serviceItem, serviceIndex) => {
           jsonParserData[parserDataKey].map(
             (jsonParserItem, jsonParserIndex) => {
-              if (serviceItem._id === jsonParserItem._id) {
-                if (serviceKey === "board") {
-                  let formData = new FormData();
-                  for (const key in jsonParserItem) {
-                    if (getClassType(jsonParserItem[key]) === "Object") {
-                      for (const objKey in jsonParserItem[key]) {
-                        formData.append(objKey, jsonParserItem[key][objKey]);
-                      }
-                    } else if (
-                      getClassType(jsonParserItem[key]) === "Array" &&
-                      (key === "files" || key === "file")
-                    ) {
-                      jsonParserItem[key].forEach((file) => {
-                        formData.append("files", file);
-                      });
-                    } else {
-                      formData.append(key, jsonParserItem[key]);
-                    }
-                  }
-                  (async () => {
-                    const result = await req.app
-                      .service(parserDataKey)
-                      .update(jsonParserItem._id, formData, {
-                        query: {},
-                        route: {},
-                        provider: "rest",
-                        headers: req.headers,
-                      });
-                    console.log(result);
-                  })();
-                } else {
-                  (async () => {
-                    const result = await req.app
-                      .service(parserDataKey)
-                      .create(jsonParserItem._id, jsonParserItem, {
-                        query: {},
-                        route: {},
-                        provider: "rest",
-                        headers: req.headers,
-                      });
-                    console.log(result);
-                  })();
-                }
-              } else if (serviceItem._id !== jsonParserItem._id) {
-                if (serviceKey === "board") {
-                  let formData = new FormData();
-                  for (const key in jsonParserItem) {
-                    if (getClassType(jsonParserItem[key]) === "Object") {
-                      for (const objKey in jsonParserItem[key]) {
-                        formData.append(objKey, jsonParserItem[key][objKey]);
-                      }
-                    } else if (
-                      getClassType(jsonParserItem[key]) === "Array" &&
-                      (key === "files" || key === "file")
-                    ) {
-                      jsonParserItem[key].forEach((file) => {
-                        formData.append("files", {
-                            //bufferto => 리스트로 해야됨 파일 리스트 
-                          value: bufferToStream(file.binary.data),
-                          options: {
-                            filename: file.originalFileName,
-                            contentType: file.mime,
-                            knownLength: file.size,
-                          },
-                        });
-                      });
-                    } else {
-                      formData.append(key, jsonParserItem[key]);
-                    }
-                  }
-                  (async () => {
-                    const result = await req.app
-                      .service(parserDataKey)
-                      .update(formData, {
-                        query: {},
-                        route: {},
-                        provider: "rest",
-                        headers: req.headers,
-                      });
-                    console.log(result);
-                  })();
-                } else {
-                  (async () => {
-                    const result = await req.app
-                      .service(parserDataKey)
-                      .create(jsonParserItem, {
-                        query: {},
-                        route: {},
-                        provider: "rest",
-                        headers: req.headers,
-                      });
-                    console.log(result);
-                  })();
-                }
+              if (
+                new ObjectID(serviceItem._id).equals(
+                  new ObjectID(jsonParserItem._id)
+                )
+              ) {
+                jsonParserData[parserDataKey].splice(jsonParserIndex,1);
+              } else {
               }
             }
           );
@@ -110,9 +26,5 @@ module.exports = (user, req, serviceData, jsonParserData) => {
     }
   }
 
-  return;
+  return jsonParserData;
 };
-
-function getClassType(obj) {
-  return Object.prototype.toString.call(obj).slice(8, -1);
-}

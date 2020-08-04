@@ -4,6 +4,7 @@ const getService = require("../lib/backup/getService");
 const path = require("path");
 const parserJSONData = require("../lib/restore/parserJSONData");
 const dataCompare = require("../lib/restore/dataCompare");
+const parseDataCreate = require("../lib/restore/parseDataCreate");
 
 module.exports = async (req, res, next) => {
   if (req.method === "PATCH") {
@@ -11,18 +12,14 @@ module.exports = async (req, res, next) => {
       headers: req.headers,
     });
     let jsonData;
-    let filePath = path.join(
-      __dirname,
-      "../../../",
-      req.file.destination + "/",
-      req.file.filename
-    );
+    // let filePath = path.join(__dirname, "../../../", req.file.destination + "/", req.file.filename);
+    let filePath = path.join( __dirname, "../../", req.file.destination + "/", req.file.filename);
 
     if (req.file.mimetype === "application/zip") {
-      let jsonFile = await unzip(req.file).catch((error) => {
+      jsonData = await unzip(req.file).catch((error) => {
         console.log(error);
       });
-      jsonData = require(jsonFile);
+      
     } else if (req.file.mimetype === "application/json") {
       jsonData = require(filePath);
     } else {
@@ -31,7 +28,8 @@ module.exports = async (req, res, next) => {
 
     let serviceData = await getService(req, user);
     let jsonParserData = await parserJSONData(jsonData);
-    let d = dataCompare(user, req, serviceData, jsonParserData);
+    let compareData = dataCompare(serviceData, jsonParserData);
+    let d = parseDataCreate( user,req,compareData)
 
     return;
   }
