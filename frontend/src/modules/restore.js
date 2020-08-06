@@ -29,7 +29,7 @@ const restoreUploadFailure = (error) => {
 export const restoreUploadThunk = (_id, data) => async (dispatch, getState) => {
   dispatch(startLoading(RESTORE_UPLOAD));
   try {
-    const response = restoreUploadApi(_id, data);
+    const response = await restoreUploadApi(_id, data);
     dispatch(restoreUploadSuccess(response));
   } catch (error) {
     dispatch(restoreUploadFailure(error));

@@ -5,7 +5,10 @@ const path = require("path");
 const parserJSONData = require("../lib/restore/parserJSONData");
 const dataCompare = require("../lib/restore/dataCompare");
 const parseDataCreate = require("../lib/restore/parseDataCreate");
-
+/**
+ * 이 전에 백업해 놓은 데이터를 복구시키는 기능을 수행하는 미들웨어
+ * 
+ */
 module.exports = async (req, res, next) => {
   if (req.method === "PATCH") {
     let user = await req.app.service("user").get(req.params.__feathersId, {
@@ -29,8 +32,8 @@ module.exports = async (req, res, next) => {
     let serviceData = await getService(req, user);
     let jsonParserData = await parserJSONData(jsonData);
     let compareData = dataCompare(serviceData, jsonParserData);
-    let d = parseDataCreate( user,req,compareData)
-
+    parseDataCreate(user,req,compareData)
+    res.send('success')
     return;
   }
   next();

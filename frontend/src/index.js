@@ -15,7 +15,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 const persistConfig = {
   key: 'root',
-  storage
+  storage,
+  blacklist: ['loading','backup','restore']
 };
 const enhancedReducer = persistReducer(persistConfig, rootReducer);
 

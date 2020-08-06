@@ -18,6 +18,8 @@ module.exports = function (app) {
     role: { type: [String], enum: ["super", "c", "r", "u", "d"] },
     image: {type: String, default:null},
     createdAt:{type:Date, default:Date.now},
+  }, {
+    versionKey: false 
   });
   const Model = mongoose.model('user',userSchema);
   return Model;

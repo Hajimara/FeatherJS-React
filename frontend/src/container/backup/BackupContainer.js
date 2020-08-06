@@ -5,11 +5,16 @@ import { message } from "antd";
 import { boardInitialize, boardFindAllThunk } from "../../modules/board";
 import { commentInitialize, findAllCommentThunk } from "../../modules/comment";
 import { restoreUploadThunk } from "../../modules/restore";
+import { backupDownloadThunk, backupInitialize } from "../../modules/backup";
+import { saveAs } from 'file-saver';
+import axios from 'axios';
+import Cookies from "universal-cookie";
 
 function BackupContainer() {
   const dispatch = useDispatch();
   const [fileCount, setFileCount] = useState();
   const [restoreFile, setRestoreFile] = useState([]);
+  const [backupLoading, setBackupLoading] = useState([]);
   const {
     user,
     boardFindAll,
@@ -18,7 +23,10 @@ function BackupContainer() {
     findAllComment,
     findAllCommentError,
     findAllCommentTotal,
-  } = useSelector(({ auth, board, comment }) => ({
+    restoreLoading,
+    backupDownload,
+    // backupLoading,
+  } = useSelector(({ auth, board, comment, loading,backup }) => ({
     user: auth.user,
     boardFindAll: board.boardFindAll,
     boardFindAllError: board.boardFindAllError,
@@ -26,7 +34,12 @@ function BackupContainer() {
     findAllComment: comment.findAllComment,
     findAllCommentError: comment.findAllCommentError,
     findAllCommentTotal: comment.findAllCommentTotal,
+    restoreLoading: loading["restore/RESTORE_UPLOAD"],
+    backupLoading: loading["backup/BACKUP_DOWNLOAD"],
+    backupDownload: backup.backupDownload
   }));
+  const cookies = new Cookies();
+
   useEffect(() => {
     return () => {
       dispatch(boardInitialize());
@@ -62,17 +75,49 @@ function BackupContainer() {
 
   const onSubmit = () => {
     let formData = new FormData();
-    formData.append('file',restoreFile[0]);
+    formData.append("file", restoreFile[0]);
     try {
-      console.log(restoreFile);
-      console.log(restoreFile[0]);
-      
-      console.log(user._id, formData);
       dispatch(restoreUploadThunk(user._id, formData));
     } catch (error) {
       console.log(error);
     }
   };
+ 
+
+  const onBackupSubmit = async (e) => {
+    setBackupLoading(true);
+    try {
+      
+      const options = {
+        method: "POST",
+        responseType: "arraybuffer",
+        headers: {
+          Authorization: "Bearer " + cookies.get("access_token"),
+        },
+        data: { user: user._id },
+        url: `http://localhost:3030/backup/`,
+      }; 
+
+      await axios(options).then((response)=>{
+        console.log(response);
+
+        const url = window.URL.createObjectURL(
+            new Blob([response.data], { type: "application/zip" })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", "backup.zip");
+          document.body.appendChild(link);
+          link.click();
+          setBackupLoading(false);
+      })
+    } catch (error) {
+      console.log(error);
+      setBackupLoading(false);
+    }
+    setBackupLoading(false);
+  };
+
   const onFileRemove = (e) => {
     console.log(e.uid);
     for (let index = 0; index < restoreFile.length; index++) {
@@ -94,8 +139,12 @@ function BackupContainer() {
       setRestoreFile={setRestoreFile}
       restoreFile={restoreFile}
       onSubmit={onSubmit}
+      restoreLoading={restoreLoading}
+      backupLoading={backupLoading}
+      onBackupSubmit={onBackupSubmit}
     />
   );
 }
 
 export default BackupContainer;
+

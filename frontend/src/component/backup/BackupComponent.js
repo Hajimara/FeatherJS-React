@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Button, Upload } from "antd";
+import { Button, Upload, Spin } from "antd";
 const Area = styled.div`
   display: flex;
   width: 100%;
@@ -63,58 +63,72 @@ function BackupComponent({
   setRestoreFile,
   restoreFile,
   onSubmit,
+  restoreLoading,
+  backupLoading,
+  onBackupSubmit,
 }) {
   return (
     <>
       <Area>
-        <TopArea>
-          <TitleBox>
-            <Title>{"Backup & Restore"}</Title>
-          </TitleBox>
-        </TopArea>
-        <AreaWrapper>
-          <MiddleArea>
-            {boardFindAllTotal ? (
-              <p>게시물 총 개수 : {boardFindAllTotal}개</p>
-            ) : (
-              ""
-            )}
-            <br />
-            {findAllCommentTotal ? (
-              <p>댓글 총 개수 : {findAllCommentTotal}개</p>
-            ) : (
-              ""
-            )}
-            <br />
-            {fileCount ? <p>파일 총 개수 : {fileCount}개</p> : ""}
-            <ButtonWrapper>
-              <ButtonBox>
-                {/* <ButtonStyled onClick={onBackupDownload}>백업</ButtonStyled> */}
-                <a href={`http://localhost:3030/backup/${user._id}`}>
-                  <ButtonStyled>백업</ButtonStyled>
-                </a>
-                <Upload
-                  name="file"
-                  fileList={restoreFile}
-                  multiple={false}
-                  beforeUpload={(file) => {
-                    setRestoreFile([file]);
-                    return false;
-                  }}
-                  onRemove={onFileRemove}
-                >
-                  <ButtonStyled>복구 파일 업로드</ButtonStyled>
-                  
-                </Upload>
-                {restoreFile && String(restoreFile).toString() !== "" ? (
+        <Spin
+          spinning={
+            (backupLoading && backupLoading === true) ||
+            (restoreLoading && restoreLoading === true)
+              ? true
+              : false
+          }
+          tip={"loading..."}
+        >
+          <TopArea>
+            <TitleBox>
+              <Title>{"Backup & Restore"}</Title>
+            </TitleBox>
+          </TopArea>
+          <AreaWrapper>
+            <MiddleArea>
+              <div>{restoreLoading}</div>
+              {boardFindAllTotal ? (
+                <p>게시물 총 개수 : {boardFindAllTotal}개</p>
+              ) : (
+                <p>게시물 총 개수 : 0</p>
+              )}
+              <br />
+              {findAllCommentTotal ? (
+                <p>댓글 총 개수 : {findAllCommentTotal}개</p>
+              ) : (
+                <p>댓글 총 개수 : 0</p>
+              )}
+              <br />
+              {fileCount ? (
+                <p>파일 총 개수 : {fileCount}개</p>
+              ) : (
+                <p>파일 총 개수 : 0</p>
+              )}
+              <ButtonWrapper>
+                <ButtonBox>
+                  <ButtonStyled onClick={onBackupSubmit}>백업</ButtonStyled>
+                  <Upload
+                    name="file"
+                    fileList={restoreFile}
+                    multiple={false}
+                    beforeUpload={(file) => {
+                      setRestoreFile([file]);
+                      return false;
+                    }}
+                    onRemove={onFileRemove}
+                  >
+                    <ButtonStyled>복구 파일 업로드</ButtonStyled>
+                  </Upload>
+                  {restoreFile && String(restoreFile).toString() !== "" ? (
                     <ButtonStyled onClick={onSubmit}>복구 요청</ButtonStyled>
                   ) : (
                     ""
                   )}
-              </ButtonBox>
-            </ButtonWrapper>
-          </MiddleArea>
-        </AreaWrapper>
+                </ButtonBox>
+              </ButtonWrapper>
+            </MiddleArea>
+          </AreaWrapper>
+        </Spin>
       </Area>
     </>
   );

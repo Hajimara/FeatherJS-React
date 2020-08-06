@@ -17,6 +17,7 @@ module.exports = async (fileInfo, res) => {
       console.log(
         "archiver has been finalized and the output file descriptor has closed."
       );
+
       let stream;
       // 경로 체크 및 스트림으로 생성
       let mimetype = mime.getType(zipFilePath);
@@ -28,12 +29,27 @@ module.exports = async (fileInfo, res) => {
           "Content-Type": mimetype,
           "Content-Disposition": "attachment; filename=" + filename,
         });
+
       } else {
         res.statusCode = 404;
         res.end();
         throw new errors.NotFound("File not found.");
       }
+
+      stream.on("data", (chunk) => {
+        console.log(`Received ${chunk.length} bytes of data.`);
+      });
+
+      stream.on("end", () => {
+        console.log("파일 전송 끝");
+        // remove zip file
+        fs.unlink(zipFilePath, function (err) {
+          if (err) throw new errors.NotFound("File not found.");
+          console.log("file deleted");
+        });
+      });
       stream.pipe(res);
+      // remove json file
       fs.unlinkSync(fileInfo.filePath);
     });
 

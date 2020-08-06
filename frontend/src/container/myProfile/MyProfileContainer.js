@@ -21,9 +21,9 @@ function MyProfileContainer() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
   const [imageFile, setImageFile] = useState();
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const history = useHistory();
@@ -42,7 +42,7 @@ function MyProfileContainer() {
     loading: loading["user/USER_PATCH"],
     passwordChange: user.passwordChange,
     passwordChangeError: user.passwordChangeError,
-    modalLoading : loading['user/USER_PASSWORD_CHANGE']
+    modalLoading: loading["user/USER_PASSWORD_CHANGE"],
   }));
 
   //스토어 정리
@@ -61,7 +61,10 @@ function MyProfileContainer() {
       setModalVisible(false);
       return;
     }
-    if(String(passwordChangeError).includes('Validation failed') || String(passwordChangeError).includes('Invalid login')){
+    if (
+      String(passwordChangeError).includes("Validation failed") ||
+      String(passwordChangeError).includes("Invalid login")
+    ) {
       message.error("현재 비밀번호가 정확하지 않습니다. 다시 입력해주세요.");
       return;
     }
@@ -84,9 +87,7 @@ function MyProfileContainer() {
         dispatch(userPatchInitialize());
         return;
       }
-      message.error(
-        "유저정보 변경에 실패하였습니다. 관리자에게 문의해주세요."
-      );
+      message.error("유저정보 변경에 실패하였습니다. 관리자에게 문의해주세요.");
       dispatch(userPatchInitialize());
       return;
     }
@@ -117,8 +118,8 @@ function MyProfileContainer() {
       _id: user._id,
       email,
       username,
-      currentPassword:password,
-      division: 'profile'
+      currentPassword: password,
+      division: "profile",
     };
 
     if (username === "") {
@@ -176,19 +177,19 @@ function MyProfileContainer() {
   };
 
   const onModalConfirm = () => {
-    setPasswordError('');
-    
+    setPasswordError("");
+
     const data = {
       _id: user._id,
       email: user.email,
       currentPassword: currentPassword,
       password: newPassword,
       confirmPassword: confirmPassword,
-      division: 'password'
+      division: "password",
     };
 
     console.log(data);
-    
+
     if (data.currentPassword === "") {
       setPasswordError("현재 사용하는 패스워드을 입력해주세요.");
       return;
@@ -208,10 +209,12 @@ function MyProfileContainer() {
       !passwordRegExp.test(data.password) &&
       !passwordRegExp.test(data.confirmPassword)
     ) {
-      setPasswordError("비밀번호는 영문, 숫자, 특수문자 8~15자리로 입력해주세요.");
+      setPasswordError(
+        "비밀번호는 영문, 숫자, 특수문자 8~15자리로 입력해주세요."
+      );
       return;
     }
-    if(data.currentPassword === data.password){
+    if (data.currentPassword === data.password) {
       setPasswordError("기존에 사용하던 비밀번호로 변경할 수 없습니다.");
       return;
     }
@@ -220,7 +223,7 @@ function MyProfileContainer() {
   };
 
   const onModalCancel = () => {
-    setPasswordError('');
+    setPasswordError("");
 
     setModalVisible(false);
     setCurrentPassword("");

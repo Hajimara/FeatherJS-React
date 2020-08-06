@@ -17,6 +17,8 @@ module.exports = function (app) {
     },
     boardId: { type: mongoose.Schema.Types.ObjectId, ref: "board" },
     isDeleted: { type: Boolean, default: false },
+  }, {
+    versionKey: false 
   });
   const Model = mongoose.model("file", fileSchema);
   return Model;

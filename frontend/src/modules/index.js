@@ -8,6 +8,7 @@ import comment from "./comment";
 import childComment from "./childComment";
 import notice from "./notice";
 import restore from "./restore";
+import backup from "./backup";
 
 const rootReducer = combineReducers({
   loading,
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
   comment,
   childComment,
   restore,
-  notice
+  notice,
+  backup
 });
 
 export default rootReducer;

@@ -16,6 +16,8 @@ module.exports = function (app) {
     text: { type: String, required: [true, "text is required!"] },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date },
+  }, {
+    versionKey: false 
   });
 
   const Model = mongoose.model("notice", noticeSchema);

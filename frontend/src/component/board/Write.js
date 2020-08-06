@@ -17,8 +17,8 @@ const Area = styled.div`
 
 const ProgressBar = styled(Progress)`
   position: absolute;
-  top:50%;
-  left:45%;
+  top: 50%;
+  left: 45%;
 `;
 const TopArea = styled.div`
   display: flex;
@@ -42,7 +42,7 @@ const AreaWrapper = styled.div`
   flex-direction: column;
   margin: 0 70px;
   /* border: 1px solid rgba(0, 0, 0, 0.125); */
-  position:relative;
+  position: relative;
 `;
 const WriteTitleBox = styled.div`
   margin: 20px 0 0 0;
@@ -81,9 +81,9 @@ const WriteBodyBox = styled.div`
   min-height: 350px;
 `;
 const WriteBody = styled.div`
-.ql-editor {
-  padding : 20px;
-}
+  .ql-editor {
+    padding: 20px;
+  }
   p {
     font-size: 14px;
     letter-spacing: 0.3px;
@@ -105,17 +105,14 @@ const WriteButtonWrapper = styled.div`
   right: 20px; */
 `;
 const WriteButton = styled(Button)`
-margin-bottom: 20px;
+  margin-bottom: 20px;
 `;
 
 const Selector = styled(Select)`
   margin-left: 20px;
   height: 40px;
-
 `;
-const SelectorOption = styled(Select.Option)`
-
-`;
+const SelectorOption = styled(Select.Option)``;
 
 const FileInput = styled(Input)`
   width: 100%;
@@ -181,7 +178,7 @@ function Write({
           // [{ header: "1" }, { header: "2" }],
           ["bold", "italic", "underline", "strike"],
           [{ list: "ordered" }, { list: "bullet" }],
-          ["blockquote", "link"]
+          ["blockquote", "link"],
         ],
       },
     });
@@ -218,10 +215,9 @@ function Write({
         <TitleBox>
           <Title>Write</Title>
         </TitleBox>
-       
       </TopArea>
       <AreaWrapper>
-      {/* <ProgressBar
+        {/* <ProgressBar
       type='circle'
       strokeColor={{
         '0%': '#108ee9',
@@ -230,124 +226,143 @@ function Write({
       percent={50}
       status="active"
     /> */}
-      <Spin spinning={writeLoading && writeLoading === true ? true : false} tip={'loading...'}>
-        <WriteTitleBox>
-          <WriteTitle
-            value={title}
-            onChange={onChangeTitle}
-            placeholder={"제목은 4~60자 이내로 적어주세요."}
-          />
-          {boardFindOne ? (
-            <Selector
-              style={{ width: 200 }}
-              placeholder="Category Selector"
-              optionFilterProp="children"
-              onChange={handleCategory}
-              defaultValue={
-                boardFindOne && boardFindOne.category === "공지"
-                  ? "공지"
-                  : boardFindOne.category === "QnA"
-                  ? "QnA"
-                  : null
-              }
-            >
-              <SelectorOption value={"공지"}>공지</SelectorOption>
-              <SelectorOption value={"QnA"}>QnA</SelectorOption>
-            </Selector>
-          ) : (
-            <Selector
-              style={{ width: 200 }}
-              placeholder="Category Selector"
-              optionFilterProp="children"
-              onChange={handleCategory}
-            >
-              <SelectorOption value={"공지"}>공지</SelectorOption>
-              <SelectorOption value={"QnA"}>QnA</SelectorOption>
-            </Selector>
-          )}
-        </WriteTitleBox>
-        <WriteFileBox>
-          <WriteFile>
-            <Upload
-              type={"files"}
-              // onChange={onFileChange}
-              id="file"
-              multiple={true}
-              beforeUpload={(file) => {
-                setFileList(fileList.concat(file));
-                return false; // 파일 선택시 바로 업로드 하지 않고 후에 한꺼번에 전송하기 위함
-              }}
-              // fileList={fileList}
-              // defaultFileList={[...fileList]}
-              onRemove={onFileRemove}
-            >
-              <div style={{display:'flex', justifyContent:  'center',  width: '100%', margin: '0 auto'}}>
-              <div><p style={{textAlign: 'center', padding: '15px'}} className="ant-upload-text">
-                파일을 업로드 해주세요. <Button>업로드</Button> <br/>
-              </p></div>
-              </div>
-             
-              {/* <p className="ant-upload-hint">
+        <Spin
+          spinning={writeLoading && writeLoading === true ? true : false}
+          tip={"loading..."}
+        >
+          <WriteTitleBox>
+            <WriteTitle
+              value={title}
+              onChange={onChangeTitle}
+              placeholder={"제목은 4~60자 이내로 적어주세요."}
+            />
+            {boardFindOne ? (
+              <Selector
+                style={{ width: 200 }}
+                placeholder="Category Selector"
+                optionFilterProp="children"
+                onChange={handleCategory}
+                defaultValue={
+                  boardFindOne && boardFindOne.category === "공지"
+                    ? "공지"
+                    : boardFindOne.category === "QnA"
+                    ? "QnA"
+                    : null
+                }
+              >
+                <SelectorOption value={"공지"}>공지</SelectorOption>
+                <SelectorOption value={"QnA"}>QnA</SelectorOption>
+              </Selector>
+            ) : (
+              <Selector
+                style={{ width: 200 }}
+                placeholder="Category Selector"
+                optionFilterProp="children"
+                onChange={handleCategory}
+              >
+                <SelectorOption value={"공지"}>공지</SelectorOption>
+                <SelectorOption value={"QnA"}>QnA</SelectorOption>
+              </Selector>
+            )}
+          </WriteTitleBox>
+          <WriteFileBox>
+            <WriteFile>
+              <Upload
+                type={"files"}
+                // onChange={onFileChange}
+                id="file"
+                multiple={true}
+                beforeUpload={(file) => {
+                  setFileList(fileList.concat(file));
+                  return false; // 파일 선택시 바로 업로드 하지 않고 후에 한꺼번에 전송하기 위함
+                }}
+                // fileList={fileList}
+                // defaultFileList={[...fileList]}
+                onRemove={onFileRemove}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    width: "100%",
+                    margin: "0 auto",
+                  }}
+                >
+                  <div>
+                    <p
+                      style={{ textAlign: "center", padding: "15px" }}
+                      className="ant-upload-text"
+                    >
+                      파일을 업로드 해주세요. <Button>업로드</Button> <br />
+                    </p>
+                  </div>
+                </div>
+
+                {/* <p className="ant-upload-hint">
       Support for a single or bulk upload. Strictly prohibit from uploading company data or other
       band files
     </p> */}
-            </Upload>
-            {boardFindOne && boardFindOne.file && !JSON.stringify(boardFindOne.file).includes('[]')? (
-              <List
-                dataSource={boardFindOne.file}
-                renderItem={(item) => {
-                  if(item.isDeleted){
-                    return;
-                  }
-                  
-                  return (
-                  <ListLine
-                    active={
-                      String(deleteFileId).includes(item._id) ? true : false
+              </Upload>
+              {boardFindOne &&
+              boardFindOne.file &&
+              !JSON.stringify(boardFindOne.file).includes("[]") ? (
+                <List
+                  dataSource={boardFindOne.file}
+                  renderItem={(item) => {
+                    if (item.isDeleted) {
+                      return;
                     }
-                    key={item._id}
-                  >
-                    <span
-                      className={
-                        "ant-upload-list-item-name ant-upload-list-item-name-icon-count-1"
-                      }
-                    >
-                      <LinkTag
-                        href={`http://localhost:3030/board/${item._id}?serverFileName=${item.serverFileName}`}
+
+                    return (
+                      <ListLine
+                        active={
+                          String(deleteFileId).includes(item._id) ? true : false
+                        }
+                        key={item._id}
                       >
-                        {item.originalFileName}
-                      </LinkTag>{" "}
-                    </span>
-                    {/* <LinkTag
+                        <span
+                          className={
+                            "ant-upload-list-item-name ant-upload-list-item-name-icon-count-1"
+                          }
+                        >
+                          <LinkTag
+                            href={`http://localhost:3030/board/${item._id}?serverFileName=${item.serverFileName}`}
+                          >
+                            {item.originalFileName}
+                          </LinkTag>{" "}
+                        </span>
+                        {/* <LinkTag
                       href={`http://localhost:3030/board/${item._id}?serverFileName=${item.serverFileName}`}
                     >
                       {item.originalFileName}
                     </LinkTag>  */}
-                    <IconBox>
-                      <CloseSquareOutlined
-                        data-id={item._id}
-                        onClick={onDeleteId}
-                      />
-                    </IconBox>
-                    {/* <span >삭제</span> */}
-                  </ListLine>
-                )}}
-              ></List>
-            ) : (
-              ""
-            )}
-          </WriteFile>
-        </WriteFileBox>
-        <WriteBodyBox>
-          <WriteBody>
-            <div ref={quillElement} />
-          </WriteBody>
-        </WriteBodyBox>
-        <WriteButtonBox>
-          <WriteButtonWrapper>
-            <WriteButton onClick={onSubmit}>등록</WriteButton>
-          </WriteButtonWrapper>
-        </WriteButtonBox></Spin>
+                        <IconBox>
+                          <CloseSquareOutlined
+                            data-id={item._id}
+                            onClick={onDeleteId}
+                          />
+                        </IconBox>
+                        {/* <span >삭제</span> */}
+                      </ListLine>
+                    );
+                  }}
+                ></List>
+              ) : (
+                ""
+              )}
+            </WriteFile>
+          </WriteFileBox>
+          <WriteBodyBox>
+            <WriteBody>
+              <div ref={quillElement} />
+            </WriteBody>
+          </WriteBodyBox>
+          <WriteButtonBox>
+            <WriteButtonWrapper>
+              <WriteButton onClick={onSubmit}>등록</WriteButton>
+            </WriteButtonWrapper>
+          </WriteButtonBox>
+        </Spin>
       </AreaWrapper>
     </Area>
   );

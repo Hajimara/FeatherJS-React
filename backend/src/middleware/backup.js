@@ -8,37 +8,16 @@ const dataParser = require("../lib/backup/dataParser");
 const fileConverter = require("../lib/backup/fileConverter");
 const createCompressedFile = require("../lib/backup/createCompressedFile");
 module.exports = async (req, res, next) => {
-  if (req.method === "GET") {
-    let user = await req.app.service("user").get(req.params.__feathersId, {
+  if (req.method === "POST") {
+    let user = await req.app.service("user").get(req.body.user, {
       headers: req.headers,
     });
 
     const serviceData = await getService(req, user);
     const parserData = await dataParser(serviceData);
     const fileInfo = await fileConverter(parserData);
-    const zipFile =  await createCompressedFile(fileInfo, res);
-
-    // let zipFilePath = zipFile.zipFilePath;
-    // let zipFileName = zipFile.filename;
-
-    // let stream;
-    // // 경로 체크 및 스트림으로 생성
-    // let mimetype = mime.getType(zipFilePath);
-    // let fileExists = fs.existsSync(zipFilePath);
-    // stream = fs.createReadStream(zipFilePath);
-
-    // if (fileExists && stream) {
-    //   res.writeHead(200, {
-    //                 "Content-Type": mimetype,
-    //                 "Content-Disposition": "attachment; filename="+zipFileName,
-    //               });
-    // } else {
-    //   res.statusCode = 404;
-    //   res.end();
-    //   throw new errors.NotFound("File not found.");
-    // }
-  
-    // stream.pipe(res)
+    await createCompressedFile(fileInfo, res);
+    
     return;
   }
   next();
@@ -48,7 +27,6 @@ module.exports = async (req, res, next) => {
 //             "Content-Type": "application/zip",
 //             "Content-Disposition": "attachment; filename="+res.hook.data.filename,
 //           });
-
 // stream.pipe(res)
 //       res.end();
 
