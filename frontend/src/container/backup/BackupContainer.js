@@ -4,10 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { message } from "antd";
 import { boardInitialize, boardFindAllThunk } from "../../modules/board";
 import { commentInitialize, findAllCommentThunk } from "../../modules/comment";
-import { restoreUploadThunk } from "../../modules/restore";
-import { backupDownloadThunk, backupInitialize } from "../../modules/backup";
-import { saveAs } from 'file-saver';
-import axios from 'axios';
+import { restoreUploadThunk, restoreInitialize } from "../../modules/restore";
+import axios from "axios";
 import Cookies from "universal-cookie";
 
 function BackupContainer() {
@@ -24,9 +22,9 @@ function BackupContainer() {
     findAllCommentError,
     findAllCommentTotal,
     restoreLoading,
-    backupDownload,
+    restoreUpload,
     // backupLoading,
-  } = useSelector(({ auth, board, comment, loading,backup }) => ({
+  } = useSelector(({ auth, board, comment, loading, restore }) => ({
     user: auth.user,
     boardFindAll: board.boardFindAll,
     boardFindAllError: board.boardFindAllError,
@@ -36,7 +34,7 @@ function BackupContainer() {
     findAllCommentTotal: comment.findAllCommentTotal,
     restoreLoading: loading["restore/RESTORE_UPLOAD"],
     backupLoading: loading["backup/BACKUP_DOWNLOAD"],
-    backupDownload: backup.backupDownload
+    restoreUpload: restore.restoreUpload,
   }));
   const cookies = new Cookies();
 
@@ -55,6 +53,24 @@ function BackupContainer() {
       message.error("데이터를 불러오는데 실패하였습니다.");
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    if (String(restoreUpload).includes("success")) {
+      try {
+        dispatch(boardFindAllThunk("backup"));
+        dispatch(findAllCommentThunk("backup"));
+        dispatch(restoreInitialize());
+        message.success("데이터를 복구하였습니다.");
+      } catch (error) {
+        console.log(error);
+        message.error(
+          "데이터를 복구하는데 실패하였습니다. 관리자에게 문의해주세요"
+        );
+        dispatch(restoreInitialize());
+      }
+    } else {
+    }
+  }, [dispatch, restoreUpload]);
 
   useEffect(() => {
     if (boardFindAll) {
@@ -76,18 +92,17 @@ function BackupContainer() {
   const onSubmit = () => {
     let formData = new FormData();
     formData.append("file", restoreFile[0]);
+    formData.append("user", user._id);
     try {
-      dispatch(restoreUploadThunk(user._id, formData));
+      dispatch(restoreUploadThunk(formData));
     } catch (error) {
       console.log(error);
     }
   };
- 
 
   const onBackupSubmit = async (e) => {
     setBackupLoading(true);
     try {
-      
       const options = {
         method: "POST",
         responseType: "arraybuffer",
@@ -96,21 +111,21 @@ function BackupContainer() {
         },
         data: { user: user._id },
         url: `http://localhost:3030/backup/`,
-      }; 
+      };
 
-      await axios(options).then((response)=>{
+      await axios(options).then((response) => {
         console.log(response);
 
         const url = window.URL.createObjectURL(
-            new Blob([response.data], { type: "application/zip" })
-          );
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", "backup.zip");
-          document.body.appendChild(link);
-          link.click();
-          setBackupLoading(false);
-      })
+          new Blob([response.data], { type: "application/zip" })
+        );
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "backup.zip");
+        document.body.appendChild(link);
+        link.click();
+        setBackupLoading(false);
+      });
     } catch (error) {
       console.log(error);
       setBackupLoading(false);
@@ -147,4 +162,3 @@ function BackupContainer() {
 }
 
 export default BackupContainer;
-

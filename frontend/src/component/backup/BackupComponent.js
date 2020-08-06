@@ -106,7 +106,7 @@ function BackupComponent({
               )}
               <ButtonWrapper>
                 <ButtonBox>
-                  <ButtonStyled onClick={onBackupSubmit}>백업</ButtonStyled>
+                  <ButtonStyled disabled={(restoreLoading||backupLoading) === true ? true : false} onClick={onBackupSubmit}>백업</ButtonStyled>
                   <Upload
                     name="file"
                     fileList={restoreFile}
@@ -117,10 +117,10 @@ function BackupComponent({
                     }}
                     onRemove={onFileRemove}
                   >
-                    <ButtonStyled>복구 파일 업로드</ButtonStyled>
+                    <ButtonStyled disabled={(restoreLoading||backupLoading) === true ? true : false}>복구 파일 업로드</ButtonStyled>
                   </Upload>
                   {restoreFile && String(restoreFile).toString() !== "" ? (
-                    <ButtonStyled onClick={onSubmit}>복구 요청</ButtonStyled>
+                    <ButtonStyled disabled={(restoreLoading||backupLoading) === true ? true : false} onClick={onSubmit}>복구 요청</ButtonStyled>
                   ) : (
                     ""
                   )}

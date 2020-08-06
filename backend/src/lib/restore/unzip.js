@@ -12,7 +12,6 @@ module.exports = async (file) => {
     filePath,
     fileName
   );
-  console.log(fileFullPath);
   
   let fp;
   const zip = fs.createReadStream(fileFullPath).pipe(unzipper.Parse({forceStream: true}));
@@ -25,9 +24,17 @@ module.exports = async (file) => {
     if (fileName) {
       entry.pipe(fs.createWriteStream(filePath+fileName));
     } else {
+      
       entry.autodrain();
     }
   }
   let jsonData = require(fp);
+
+  if(fs.existsSync(fp)){
+    fs.unlinkSync(fp);
+  }
+  if(fs.existsSync(fileFullPath)){
+    fs.unlinkSync(fileFullPath);
+  }
   return jsonData;
 };

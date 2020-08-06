@@ -5,19 +5,20 @@ const path = require("path");
 module.exports = async (data) => {
   let filename =
     String(new Date().getTime()).toString() + "_fileConverter.json";
-  let filePath = path.join(__dirname, "/../../..", "/backup_file", filename);
-  var output = fs.createWriteStream(filePath);
+  let filePath = path.join(__dirname, "/../../..", "/backup_file");
+  let fileFullPath = path.join(filePath,filename)
+  if(!fs.existsSync(filePath)){
+    fs.mkdirSync(filePath)
+  }
+  let output = fs.createWriteStream(fileFullPath);
   try {
-    
-    // fs.writeFileSync(filePath, JSON.stringify(data), (error) => {
-    //   if (error) console.log(error);
-    // });
     output.write(JSON.stringify(data),'utf-8');
 
     output.end();
 
     output.on('finish', function() {
       console.log("Write completed.");
+      
    });
    
    output.on('error', function(err) {
@@ -27,7 +28,7 @@ module.exports = async (data) => {
   } catch (error) {
     console.log(error);
   }
-  return { filePath, filename };
+  return { fileFullPath, filename };
 };
 
 

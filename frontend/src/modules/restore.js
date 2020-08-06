@@ -8,7 +8,7 @@ const RESTORE_UPLOAD_INITIALIZE = "restore/RESTORE_UPLOAD_INITIALIZE";
 
 export const restoreInitialize = () => {
   return {
-    type: RESTORE_UPLOAD,
+    type: RESTORE_UPLOAD_INITIALIZE,
   };
 };
 
@@ -26,10 +26,10 @@ const restoreUploadFailure = (error) => {
   };
 };
 
-export const restoreUploadThunk = (_id, data) => async (dispatch, getState) => {
+export const restoreUploadThunk = (data) => async (dispatch, getState) => {
   dispatch(startLoading(RESTORE_UPLOAD));
   try {
-    const response = await restoreUploadApi(_id, data);
+    const response = await restoreUploadApi(data);
     dispatch(restoreUploadSuccess(response));
   } catch (error) {
     dispatch(restoreUploadFailure(error));

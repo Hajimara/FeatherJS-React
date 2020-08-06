@@ -13,8 +13,8 @@ app.configure(restClient.axios(axios));
 
 const restore = app.service("restore");
 
-export const restoreUploadApi = (_id,data) => {
-  return restore.patch(_id,data,{
+export const restoreUploadApi = (data) => {
+  return restore.create(data,{
     headers: {
       Authorization: "Bearer " + cookies.get("access_token"),
     },

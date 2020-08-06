@@ -2,8 +2,17 @@ const fs = require("fs");
 const path = require("path");
 const archiver = require("archiver");
 const mime = require("mime");
-
+const { errors } = require("@feathersjs/errors");
+/**
+ * 
+ * @param {object} fileInfo JSON File의 경로와 이름을 담고있는 객체
+ * @param {*} res 
+ */
 module.exports = async (fileInfo, res) => {
+  if (!fs.existsSync(fileInfo.fileFullPath)) {
+    throw new errors.NotFound("File not found.");
+  }
+
   let filename =
     String(new Date().getTime()).toString() + "_fileCompressed.zip";
   let zipFilePath = path.join(__dirname, "/../../..", "/backup_file", filename);
@@ -11,6 +20,7 @@ module.exports = async (fileInfo, res) => {
   var archive = archiver("zip", {
     zlib: { level: 9 }, // Sets the compression level.
   });
+  
   try {
     output.on("close", function () {
       console.log(archive.pointer() + " total bytes");
@@ -29,7 +39,6 @@ module.exports = async (fileInfo, res) => {
           "Content-Type": mimetype,
           "Content-Disposition": "attachment; filename=" + filename,
         });
-
       } else {
         res.statusCode = 404;
         res.end();
@@ -50,7 +59,10 @@ module.exports = async (fileInfo, res) => {
       });
       stream.pipe(res);
       // remove json file
-      fs.unlinkSync(fileInfo.filePath);
+      fs.unlink(fileInfo.fileFullPath, function (err) {
+        if (err) throw new errors.NotFound("File not found.");
+        console.log("file deleted");
+      });
     });
 
     output.on("end", function () {
@@ -74,7 +86,7 @@ module.exports = async (fileInfo, res) => {
     // pipe archive data to the file
     archive.pipe(output);
 
-    archive.append(fs.createReadStream(fileInfo.filePath), {
+    archive.append(fs.createReadStream(fileInfo.fileFullPath), {
       name: fileInfo.filename,
     });
     archive.finalize();
@@ -83,21 +95,3 @@ module.exports = async (fileInfo, res) => {
   }
   return { zipFilePath, filename };
 };
-
-// module.exports = async (fileInfo) => {
-//   let filename =
-//     String(new Date().getTime()).toString() + "_fileCompressed.zip";
-//   let zipFilePath = path.join(__dirname, "/../../..", "/backup_file", filename);
-//   try {
-//     zip.file(fileInfo.filename, fs.readFileSync(fileInfo.filePath));
-//     let data = zip.generate({ base64: false, compression: "DEFLATE" });
-//     fs.writeFileSync(zipFilePath, data, "binary", function (err) {
-//       if (err) console.log(err);
-//     });
-//     fs.unlinkSync(fileInfo.filePath);
-//   } catch (error) {
-//     console.log(error);
-//   }
-//   return { zipFilePath, filename };
-
-// };
