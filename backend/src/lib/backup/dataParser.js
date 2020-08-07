@@ -12,11 +12,13 @@ const mime = require("mime");
  * @returns {object} jsonDocument 서비스에서 불러온 데이터를 하나로 묶은 josn형식의 데이터
  */
 
-module.exports = async (dataStructure, id) => {
+module.exports = async (dataStructure, res) => {
   let rootKey;
   let jsonDocument;
   let filePath;
-  for (let item in dataStructure) {
+  console.log(dataStructure);
+  try {
+    for (let item in dataStructure) {
     // rootKey를 지정하기 위해 항상 객체 맨 위에 root document를 지정하여 파라미터로 전달해야함
     if (!rootKey) {
       rootKey = item;
@@ -84,7 +86,15 @@ module.exports = async (dataStructure, id) => {
       return n * fileRecursion(documentObj, n - 1);
     }
   }
-  return jsonDocument;
+  } catch (error) {
+    console.log(error);
+  }
+
+ 
+    return {jsonDocument,rootKey};
+  
+
+  
 };
 
 function getClassType(obj) {

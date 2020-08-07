@@ -8,9 +8,9 @@
     "email": "show3rg@gmail.com"
   },
   "scripts": {
-    "start:dev": "nodemon src/ --ignore 'backup_file/*' --ignore 'restore-file/*' ",
+    "start:dev": "nodemon --max-old-space-size=8192 src/ --ignore 'backup_file/*' --ignore 'restore-file/*' ",
     "start": "node src/",
-    "start:debug": "node --inspect src/ "
+    "start:debug": "node --max-old-space-size=8192 src/ --inspect src/ "
   },
   "dependencies": {
     "@feathers-plus/batch-loader": "0.3.4",

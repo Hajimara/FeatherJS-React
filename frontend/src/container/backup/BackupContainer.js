@@ -13,6 +13,8 @@ function BackupContainer() {
   const [fileCount, setFileCount] = useState();
   const [restoreFile, setRestoreFile] = useState([]);
   const [backupLoading, setBackupLoading] = useState([]);
+  const [boardIdList, setBoardIdList] = useState([]);
+
   const {
     user,
     boardFindAll,
@@ -23,6 +25,7 @@ function BackupContainer() {
     findAllCommentTotal,
     restoreLoading,
     restoreUpload,
+    restoreUploadError
     // backupLoading,
   } = useSelector(({ auth, board, comment, loading, restore }) => ({
     user: auth.user,
@@ -35,6 +38,7 @@ function BackupContainer() {
     restoreLoading: loading["restore/RESTORE_UPLOAD"],
     backupLoading: loading["backup/BACKUP_DOWNLOAD"],
     restoreUpload: restore.restoreUpload,
+    restoreUploadError: restore.restoreUploadError,
   }));
   const cookies = new Cookies();
 
@@ -44,6 +48,20 @@ function BackupContainer() {
       dispatch(commentInitialize());
     };
   }, []);
+  useEffect(()=>{
+    if(restoreUploadError){
+      if(restoreUploadError.error==='The file cannot be read.'){
+        message.error('파일이 손상되었거나 Json형식의 파일이 아닙니다. 다시 시도해주세요')
+        dispatch(restoreInitialize());
+      }else if(restoreUploadError.error==='File type not matching.'){
+        message.error('파일의 유형은 zip 또는 json 파일만 지원됩니다. 다시 시도해주세요')
+        dispatch(restoreInitialize());
+      }else{
+        message.error('복구를 진행할 수 없습니다. 관리자에게 문의해주세요.')
+        dispatch(restoreInitialize());
+      }
+    }
+  },[restoreUploadError])
   useEffect(() => {
     try {
       dispatch(boardFindAllThunk("backup"));
@@ -101,6 +119,10 @@ function BackupContainer() {
   };
 
   const onBackupSubmit = async (e) => {
+    if(boardFindAll.length <1 && findAllComment.length <1){
+      message.warning('백업 데이터가 없습니다.')
+      return;
+    }
     setBackupLoading(true);
     try {
       const options = {
@@ -109,7 +131,7 @@ function BackupContainer() {
         headers: {
           Authorization: "Bearer " + cookies.get("access_token"),
         },
-        data: { user: user._id },
+        data: { user: user._id, selectBoardId : boardIdList },
         url: `http://localhost:3030/backup/`,
       };
 
@@ -125,16 +147,28 @@ function BackupContainer() {
         document.body.appendChild(link);
         link.click();
         setBackupLoading(false);
-      });
+      message.success('백업파일을 다운로드합니다.')
+    }).catch((error)=>{
+      if(String(error).includes('500')){
+        console.log(error);
+        message.warning('백업 데이터가 없습니다.')
+        setBackupLoading(false);
+      }else{
+        console.log(error);
+      message.error('서버와의 통신이 불안정합니다. 다시 시도해주세요.')
+      setBackupLoading(false);
+      }
+      
+    });
     } catch (error) {
       console.log(error);
+      message.error('서버와의 통신이 불안정합니다. 다시 시도해주세요.')
       setBackupLoading(false);
     }
     setBackupLoading(false);
   };
 
   const onFileRemove = (e) => {
-    console.log(e.uid);
     for (let index = 0; index < restoreFile.length; index++) {
       const compareFile = restoreFile[index];
       if (e.uid === compareFile.uid) {
@@ -142,6 +176,17 @@ function BackupContainer() {
       } else {
       }
     }
+  };
+
+  const onChangeCheckBox = (e) => {
+    let boardId = e.nativeEvent.target.dataset.id;
+    let checked = e.target.checked;
+    if(checked === true){
+      setBoardIdList([...boardIdList , boardId]);
+    }else{
+      setBoardIdList(boardIdList.filter((item)=> item !== boardId));
+    }
+    console.log(boardIdList);
   };
 
   return (
@@ -157,6 +202,10 @@ function BackupContainer() {
       restoreLoading={restoreLoading}
       backupLoading={backupLoading}
       onBackupSubmit={onBackupSubmit}
+      boardFindAll={boardFindAll}
+      findAllComment={findAllComment}
+      onChangeCheckBox={onChangeCheckBox}
+      boardIdList={boardIdList}
     />
   );
 }

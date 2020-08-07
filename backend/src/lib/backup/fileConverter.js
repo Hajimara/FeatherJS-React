@@ -27,6 +27,13 @@ module.exports = async (data) => {
 
   } catch (error) {
     console.log(error);
+    if(fs.existsSync(fileFullPath)){
+      fs.unlinkSync(fileFullPath);
+    }
+    return res.status(500).send({
+      error: "Failed to create file.",
+      description: "The file is corrupted.",
+    });
   }
   return { fileFullPath, filename };
 };

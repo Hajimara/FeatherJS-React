@@ -14,9 +14,16 @@ module.exports = async (req, res, next) => {
     });
     
     const serviceData = await getService(req, user);
-    const parserData = await dataParser(serviceData);
-    const fileInfo = await fileConverter(parserData);
-    await createCompressedFile(fileInfo, res);
+    const parserData = await dataParser(serviceData,res);
+    if(parserData.jsonDocument[parserData.rootKey].length < 1 ){
+      return res.status(500).send({
+        error: "There is no data to be backed up.",
+        description: "There is no data to be backed up.",
+      });
+    }else{
+      const fileInfo = await fileConverter(parserData.jsonDocument);
+      await createCompressedFile(fileInfo, res);
+    }
     
     return;
   }

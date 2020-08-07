@@ -140,7 +140,7 @@ function BoardListContainer() {
       onSubmit={onSubmit}
       onInitSearch={onInitSearch}
       sortedInfo={sortedInfo}
-onChangeSortColumn={onChangeSortColumn}
+      onChangeSortColumn={onChangeSortColumn}
     />
   );
 }
