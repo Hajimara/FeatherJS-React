@@ -9,7 +9,7 @@ module.exports = (app) => {
   const paginate = app.get("paginate");
   
   const storage = multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, "./restore-file"),
+    destination: (_req, _file, cb) => cb(null, "./upload"),
     filename: (_req, file, cb) =>
       cb(null, `${Date.now()}-${file.originalname}`),
   });
@@ -17,8 +17,8 @@ module.exports = (app) => {
   const upload = multer({
     storage,
     limits: {
-      fieldSize: 10000000000,
-      fileSize: 10000000000,
+      fieldSize: 100000000000,
+      fileSize: 100000000000,
     },
   });
   

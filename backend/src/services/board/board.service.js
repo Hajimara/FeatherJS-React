@@ -18,8 +18,8 @@ module.exports = (app) => {
   const upload = multer({
     storage,
     limits: {
-      fieldSize: 10000000000,
-      fileSize: 10000000000,
+      fieldSize: 100000000000,
+      fileSize: 100000000000,
     },
   });
   const options = {
@@ -79,47 +79,52 @@ module.exports = (app) => {
             if(String(req.query.serverFileName).includes('.png')){
               _res.writeHead(200, {
                 'Content-Type': 'image/png',
-                'Content-Disposition': 'attachment; filename=' 
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
             }else if(String(req.query.serverFileName).includes('.jpeg') || String(req.query.serverFileName).includes('.jpg')){
               _res.writeHead(200, {
                 'Content-Type': 'image/jpeg',
-                'Content-Disposition': 'attachment; filename=' 
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
             }else if(String(req.query.serverFileName).includes('.doc')){
               _res.writeHead(200, {
                 'Content-Type': 'application/msword',
-                'Content-Disposition': 'attachment; filename=' 
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
             }else if(String(req.query.serverFileName).includes('.pdf') ){
               _res.writeHead(200, {
                 'Content-Type': 'application/pdf',
-                'Content-Disposition': 'attachment; filename=' 
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
             }else if(String(req.query.serverFileName).includes('.xls') || String(req.query.serverFileName).includes('.xlsx')){
               _res.writeHead(200, {
                 'Content-Type': 'application/vnd.ms-excel',
-                'Content-Disposition': 'attachment; filename=' 
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
             }else if(String(req.query.serverFileName).includes('.zip')){
               _res.writeHead(200, {
                 'Content-Type': 'application/zip',
-                'Content-Disposition': 'attachment; filename=' 
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
             }else if(String(req.query.serverFileName).includes('.js')){
               _res.writeHead(200, {
                 'Content-Type': 'application/x-javascript',
-                'Content-Disposition': 'attachment; filename=' 
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
             }else if(String(req.query.serverFileName).includes('.json')){
               _res.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Content-Disposition': 'attachment; filename=' 
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
+              });
+            }else if(String(req.query.serverFileName).includes('.mkv')){
+              _res.writeHead(200, {
+                'Content-Type': 'video/x-matroska',
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
             }else{
               _res.writeHead(200, {
                 'Content-Type': 'application/octet-stream',
-                'Content-Disposition': 'attachment; filename=' 
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
             }
             

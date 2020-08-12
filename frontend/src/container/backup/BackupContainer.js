@@ -7,6 +7,7 @@ import { commentInitialize, findAllCommentThunk } from "../../modules/comment";
 import { restoreUploadThunk, restoreInitialize } from "../../modules/restore";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import download from "downloadjs";
 
 function BackupContainer() {
   const dispatch = useDispatch();
@@ -73,21 +74,30 @@ function BackupContainer() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (String(restoreUpload).includes("success")) {
-      try {
-        dispatch(boardFindAllThunk("backup"));
-        dispatch(findAllCommentThunk("backup"));
+    if(restoreUpload){
+      if (String(restoreUpload).includes("success")) {
+        try {
+          dispatch(boardFindAllThunk("backup"));
+          dispatch(findAllCommentThunk("backup"));
+          dispatch(restoreInitialize());
+          message.success("데이터를 복구하였습니다.");
+        } catch (error) {
+          console.log(error);
+          message.error(
+            "데이터를 복구하는데 실패하였습니다. 관리자에게 문의해주세요"
+          );
+          dispatch(restoreInitialize());
+        }
+      } else if(String(restoreUpload).includes("exist")) {
+        message.warning("이미 존재하는 데이터입니다.");
         dispatch(restoreInitialize());
-        message.success("데이터를 복구하였습니다.");
-      } catch (error) {
-        console.log(error);
+      }else{
         message.error(
           "데이터를 복구하는데 실패하였습니다. 관리자에게 문의해주세요"
         );
-        dispatch(restoreInitialize());
       }
-    } else {
     }
+    
   }, [dispatch, restoreUpload]);
 
   useEffect(() => {
@@ -127,16 +137,21 @@ function BackupContainer() {
     try {
       const options = {
         method: "POST",
-        responseType: "arraybuffer",
+        responseType: "blob",
         headers: {
           Authorization: "Bearer " + cookies.get("access_token"),
         },
-        data: { user: user._id, selectBoardId : boardIdList },
+        data: { user: user._id, selectBoardId: boardIdList },
         url: `http://localhost:3030/backup/`,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        timeout: 0,
       };
+        // timeout: 60*15*1000,
 
       await axios(options).then((response) => {
         console.log(response);
+        // download(response.data, "backup.zip", "application/zip");
 
         const url = window.URL.createObjectURL(
           new Blob([response.data], { type: "application/zip" })
