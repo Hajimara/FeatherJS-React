@@ -8,7 +8,8 @@ const getService = require("../lib/backup/getService");
 const dataParser = require("../lib/backup/dataParser");
 const fileConverter = require("../lib/backup/fileConverter");
 const createCompressedFile = require("../lib/backup/createCompressedFile");
-const jsonToStringify = require('../lib/common/jsonToStringify');
+const jsonToStringify = require("../lib/common/jsonToStringify");
+const createCompressedFileCLI = require("../lib/backup/createCompressedFileCLI");
 /**
  * 백업 미들웨어
  * 1. board서비스는 데이터에 대해 검증과정을 거치기 위해서 유저에 대한 정보가 필요하다.
@@ -20,58 +21,60 @@ const jsonToStringify = require('../lib/common/jsonToStringify');
  * feathers 후크를 제외하고 미들웨어가 끝나면 response를 보내주게 된다.
  */
 module.exports = async (req, res, next) => {
-  console.time('backup');
-  req.connection.setTimeout(60 * 120 * 1000)
-
-//   let myWorker1,
-//     myWorker2,
-//     myWorker3,
-//     myWorker4,
-//     myWorker5,
-//     myWorker6,
-//     myWorker7,
-//     myWorker8,
-//     myWorker9,
-//     myWorker10;
-//   let workerPath = path.join(__dirname , '../lib/backup/createCompressedFile.js')
-// myWorker1 = new Worker(workerPath); // 스레드를 생성해 파일 절대경로를 통해 가리킨 js파일을 작업
-// myWorker2 = new Worker(workerPath);
-// myWorker3 = new Worker(workerPath);
-// myWorker4 = new Worker(workerPath);
-// myWorker5 = new Worker(workerPath);
-// myWorker6 = new Worker(workerPath);
-// myWorker7 = new Worker(workerPath);
-// myWorker8 = new Worker(workerPath);
-// myWorker9 = new Worker(workerPath);
-// myWorker10 = new Worker(workerPath);
+  console.time("backup");
+  req.connection.setTimeout(60 * 300 * 1000);
+  console.log(req.method);
+  //   let myWorker1,
+  //     myWorker2,
+  //     myWorker3,
+  //     myWorker4,
+  //     myWorker5,
+  //     myWorker6,
+  //     myWorker7,
+  //     myWorker8,
+  //     myWorker9,
+  //     myWorker10;
+  //   let workerPath = path.join(__dirname , '../lib/backup/createCompressedFile.js')
+  // myWorker1 = new Worker(workerPath); // 스레드를 생성해 파일 절대경로를 통해 가리킨 js파일을 작업
+  // myWorker2 = new Worker(workerPath);
+  // myWorker3 = new Worker(workerPath);
+  // myWorker4 = new Worker(workerPath);
+  // myWorker5 = new Worker(workerPath);
+  // myWorker6 = new Worker(workerPath);
+  // myWorker7 = new Worker(workerPath);
+  // myWorker8 = new Worker(workerPath);
+  // myWorker9 = new Worker(workerPath);
+  // myWorker10 = new Worker(workerPath);
 
   if (req.method === "POST") {
+    let startTime = process.uptime();
     let user = await req.app.service("user").get(req.body.user, {
       headers: req.headers,
     });
-    
+
     const serviceData = await getService(req, user);
-    const parserData = await dataParser(serviceData,res);
-    if(parserData.jsonDocument[parserData.rootKey].length < 1 ){
+    const parserData = await dataParser(serviceData, req);
+    if (parserData.jsonDocument[parserData.rootKey].length < 1) {
       return res.status(500).send({
         error: "There is no data to be backed up.",
         description: "There is no data to be backed up.",
       });
-    }else{
+    } else {
       // const stringData = await jsonToStringify(parserData.jsonDocument);
       const fileInfo = await fileConverter(parserData.jsonDocument);
-      await createCompressedFile(parserData.uploadFileData,fileInfo, res);
+      await createCompressedFile(
+        parserData.uploadFileData,
+        fileInfo,
+        res,
+        startTime
+      );
+      // await createCompressedFileCLI(
+      //   parserData.uploadFileData,
+      //   fileInfo,
+      //   res,
+      //   startTime
+      // );
     }
-
-    //-----------------------test 1597048454455_fileCompressed.zip ---------
-    
-    // let zipFilePath = path.join(__dirname, "../../", '/backup_file' + "/1597048454455_fileCompressed.zip");
-    // let stream;
-    //   // 경로 체크 및 스트림으로 생성
-    //   let mimetype = mime.getType(zipFilePath);
-    //   let fileExists = fs.existsSync(zipFilePath);
-    //   stream = fs.createReadStream(zipFilePath);
-    //   res.sendFile(zipFilePath, {headers: {'Content-Type': mimetype}})
 
     //   if (fileExists && stream) {
     //     res.writeHead(200, {
@@ -101,7 +104,7 @@ module.exports = async (req, res, next) => {
     //     //   if (err) throw new errors.NotFound("File not found.");
     //     //   console.log("file deleted");
     //     // });
-        
+
     //     res.end();
     //   });
     //   res.on("drain", function () {
@@ -110,7 +113,70 @@ module.exports = async (req, res, next) => {
     //  });
 
     //   stream.pipe(res);
-    console.timeEnd('backup');
+    console.timeEnd("backup");
+    return;
+  }
+
+  if (req.method === "GET") {
+    console.log('file downlaod');
+    // let zipFilePath = path.join(
+    //   __dirname,
+    //   "../../",
+    //   "/upload" + `/${req.query.fileName}`
+    // );
+    let zipFilePath = path.join(
+      __dirname,
+      "../../",
+      "/backup_file" + `/${req.query.fileName}`
+    );
+    console.log(zipFilePath);
+    let stream;
+    // 경로 체크 및 스트림으로 생성
+    let mimetype = mime.getType(zipFilePath);
+    let fileExists = fs.existsSync(zipFilePath);
+    stream = fs.createReadStream(zipFilePath);
+    console.log(fileExists, mimetype);
+    try {
+      
+      res.append("Set-Cookie",`download=success;`);
+      res.append('Set-Cookie', `fileName=${req.query.fileName}`);
+
+      await res.sendFile(
+        zipFilePath,
+        { headers: { "Content-Type": mimetype } },
+        () => {
+          console.log("file send end");
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    return;
+  }
+
+  if (req.method === "DELETE") {
+    let removeFilePath = path.join(
+      __dirname,
+      "../../",
+      "/backup_file" + `/${req.query.fileName}`
+    );
+    // let removeFilePath = path.join(
+    //   __dirname,
+    //   "../../",
+    //   "/upload" + `/${req.query.fileName}`
+    // );
+    try {
+      if(fs.existsSync(removeFilePath)){
+        fs.unlink(removeFilePath, function (err) {
+          if (err) throw new errors.NotFound("File not found.");
+          console.log("file deleted");
+        });
+        res.send('delete file');
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
     return;
   }
   next();
@@ -181,3 +247,23 @@ module.exports = async (req, res, next) => {
 //           console.log("success");
 //         }
 //       });
+
+
+// async function sendFile() {
+//   return new Promise((resolve, reject) => {
+//     res.sendFile(
+//       zipFilePath,
+//       { headers: { "Content-Type": mimetype } },
+//       () => {
+//         console.log("file send end");
+//         resolve(true);
+//       }
+//     );
+//   })
+//     .then(() => {
+//       console.log("end ");
+//     })
+//     .catch(() => {
+//       console.log("error");
+//     });
+// }

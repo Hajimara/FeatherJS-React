@@ -2,13 +2,14 @@ const { authenticate } = require("@feathersjs/authentication").hooks;
 const backup = require('../../hooks/backup-file');
 module.exports = {
   before: {
-    all: [authenticate("jwt"),],
+    all: [],
+    // all: [authenticate("jwt"),],
     find: [],
     get: [],
-    create: [],
+    create: [authenticate("jwt")],
     update: [],
     patch: [],
-    remove: [],
+    remove: [authenticate("jwt")],
   },
   after: {
     all: [],

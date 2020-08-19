@@ -8,39 +8,72 @@
 module.exports = async (req, user) => {
   let board = null;
   let comment = null;
+  let getServiceList = req.body.dataStructure;
+  let dataStructure = {};
 
   try {
-    if (String(req.originalUrl).includes("/backup") && req.body.selectBoardId.length > 0) {
-      board = await req.app.service("board").find({
-        user,
-        query: {
-          $sort: {
-            createdAt: -1,
-          },
-          _id: {
-            $in: req.body.selectBoardId,
-          },
-        },
-      });
-      comment = await req.app.service("comment").find({
-        user,
-        query: {
-          $sort: {
-            createdAt: -1,
-          },
-          board: {
-            $in: req.body.selectBoardId,
-          },
-        },
+    console.log(getServiceList);
+    if (
+      String(req.originalUrl).includes("/backup") &&
+      req.body.selectBoardId.length > 0
+    ) {
+      const getSelectServicePromise = async (serviceItem) => {
+        return new Promise(async (resolve, reject) => {
+          let result = await req.app.service(serviceItem).find({
+            user,
+            query: {
+              $sort: {
+                createdAt: -1,
+              },
+              _id: {
+                $in: req.body.selectBoardId,
+              },
+            },
+          });
+          console.log(result);
+          if (result) {
+            dataStructure[serviceItem] = result.data;
+            resolve(result);
+          } else {
+            reject;
+          }
+        });
+      };
+      await Promise.all(
+        getServiceList.map((serviceItem) =>
+          getSelectServicePromise(serviceItem)
+        )
+      ).then(() => {
+        console.log("get Service");
       });
     } else {
-      board = await req.app.service("board").find({ user });
-      comment = await req.app.service("comment").find({ user });
+      if (typeof getServiceList === "string") {
+        getServiceList = getServiceList.substring(0).substring(-1).split(",");
+      }
+      const getServicePromise = async (serviceItem) => {
+        return new Promise(async (resolve, reject) => {
+          let result = await req.app.service(serviceItem).find({
+            user,
+          });
+          console.log(result);
+          if (result) {
+            dataStructure[serviceItem] = result.data;
+            resolve(result);
+          } else {
+            reject;
+          }
+        });
+      };
+      await Promise.all(
+        getServiceList.map((serviceItem) => getServicePromise(serviceItem))
+      ).then(() => {
+        console.log("get Service");
+      });
     }
   } catch (error) {
     console.log(error);
   }
-  const dataStructure = { board: board.data, comment: comment.data };
+  // const dataStructure = { board: board.data, comment: comment.data };
 
   return dataStructure;
 };

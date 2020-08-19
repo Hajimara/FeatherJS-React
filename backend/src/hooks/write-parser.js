@@ -93,10 +93,24 @@ module.exports = (option = {}) => {
         delete context.data.attachment;
       }
       if (context.method === "remove") {
+        let user = await context.app.service("user").get(context.arguments[1].user._id, {
+          headers: context.headers,
+        });
         let boardInfo = await context.app.service("board").get(context.id, {
           headers: {
             Authorization: context.params.headers.authorization,
             "Content-Type": "application/json",
+          },
+        });
+        let commentInfo = await context.app.service("comment").find({
+          user,
+          query: {
+            $sort: {
+              createdAt: -1,
+            },
+            board: {
+              $in: context.id,
+            },
           },
         });
         if (boardInfo.hasOwnProperty("file") && boardInfo.file.length > 0) {
@@ -126,6 +140,14 @@ module.exports = (option = {}) => {
               // });
             }
           }
+        }
+        if(commentInfo.data.length > 0){
+          let removeComment = commentInfo.data;
+          removeComment.map(async (commentItem)=>{
+            await context.app.service("comment").remove(commentItem._id,{
+              user,
+            });
+          })
         }
       }
     }

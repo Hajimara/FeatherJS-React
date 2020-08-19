@@ -26,9 +26,10 @@ module.exports = async (jsonData) => {
       }
     }
     console.log(getClassType(item[key]));
-    if(getClassType(item[key]) === 'Object'){
-      dataStructure[key] = docArray;
-      jsonData[key] = dataStructure[key];
+    if(docArray.length > 0){
+      // dataStructure[key] = docArray;
+      // jsonData[key] = dataStructure[key];
+      jsonData[key] = docArray;
     }
     
   });

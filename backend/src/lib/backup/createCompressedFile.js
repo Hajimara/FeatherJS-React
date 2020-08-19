@@ -3,6 +3,8 @@ const path = require("path");
 const archiver = require("archiver");
 const mime = require("mime");
 const errors = require("@feathersjs/errors");
+const pidusage = require("pidusage");
+
 /**
  * Stream형식으로 파일을 압축시켜 .zip파일을 사용자에게 response해준다.
  * 경로 수정
@@ -10,10 +12,18 @@ const errors = require("@feathersjs/errors");
  * @param {object} uploadFileData 압축할 파일 경로 데이터
  * @param {*} res
  */
-module.exports = async (uploadFileData, fileInfo, res) => {
-  let startTime = process.uptime();  
+module.exports = async (uploadFileData, fileInfo, res, startTime) => {
   if (!fs.existsSync(fileInfo.fileFullPath)) {
     throw new errors.NotFound("File not found.");
+  }
+  pidusage(process.pid, function (err, stats) {
+    console.log(stats);
+  });
+  let used = process.memoryUsage();
+  for (let key in used) {
+    console.log(
+      `${key} ${Math.round((used[key] / 1024 / 1024) * 100) / 100} MB`
+    );
   }
 
   let filename =
@@ -21,7 +31,7 @@ module.exports = async (uploadFileData, fileInfo, res) => {
   let zipFilePath = path.join(__dirname, "/../../..", "/backup_file", filename);
   var output = fs.createWriteStream(zipFilePath);
   var archive = archiver("zip", {
-    zlib: { level: 9 }, // Sets the compression level.
+    zlib: { level: 1 }, // Sets the compression level.
   });
 
   try {
@@ -30,64 +40,44 @@ module.exports = async (uploadFileData, fileInfo, res) => {
       console.log(
         "archiver has been finalized and the output file descriptor has closed."
       );
+      pidusage(process.pid, function (err, stats) {
+        console.log(stats);
+      });
+      used = process.memoryUsage();
+      for (let key in used) {
+        console.log(
+          `${key} ${Math.round((used[key] / 1024 / 1024) * 100) / 100} MB`
+        );
+      }
+
       let stream;
       // 경로 체크 및 스트림으로 생성
       let mimetype = mime.getType(zipFilePath);
       // let fileExists = fs.existsSync(zipFilePath);
       // stream = fs.createReadStream(zipFilePath);
       let endTime = process.uptime();
-console.log("main thread time: " + (endTime - startTime)); 
-        res.sendFile(zipFilePath, { headers: { "Content-Type": mimetype } },()=>{
-          console.log('end file delete');
-          fs.unlink(zipFilePath, function (err) {
-            if (err) throw new errors.NotFound("File not found.");
-            console.log("file deleted");
-          });
+      console.log("main thread time: " + (endTime - startTime));
+      
+      // res.sendFile(
+      //   zipFilePath,
+      //   { headers: { "Content-Type": mimetype } },
+      //   () => {
+      //     console.log("end file delete");
+      //     // fs.unlink(zipFilePath, function (err) {
+      //     //   if (err) throw new errors.NotFound("File not found.");
+      //     //   console.log("file deleted");
+      //     // });
           fs.unlink(fileInfo.fileFullPath, function (err) {
             if (err) throw new errors.NotFound("File not found.");
             console.log("file deleted");
           });
-        });
-      
-      //   if (fileExists && stream) {
-      //     res.writeHead(200, {
-      //       "Content-Type": mimetype,
-      //       "Content-Disposition": "attachment; filename=" + filename,
-      //     });
-      //   } else {
-      //     res.statusCode = 404;
-      //     res.end();
-      //     throw new errors.NotFound("File not found.");
+          res.append(
+            "Set-Cookie",
+            `download=success;`
+          );
+          res.send(`http://localhost:3030/backup?fileName=${filename}`)
       //   }
-
-      //   stream.on("data", (chunk) => {
-      //     // console.log(`Received ${chunk.length} bytes of data.`);
-      //     console.log(`전송 데이터 청크 ${chunk.length} bytes.`);
-
-      //     if(!res.write(chunk)){
-      //     console.log('pause');
-      //       stream.pause();
-      //   }
-      //   });
-
-      //   stream.on("end", () => {
-      //     console.log("파일 전송 끝");
-      // remove zip file
-
-      //     res.end();
-      //   });
-      //   res.on("drain", function () {
-      //     console.log('drain');
-      //     stream.resume();
-      //  });
-
-      //   stream.pipe(res);
-
-      // remove json file
-      // fs.unlink(fileInfo.fileFullPath, function (err) {
-      //   if (err) throw new errors.NotFound("File not found.");
-      //   console.log("file deleted");
-      // });
+      // );
     });
 
     output.on("end", function () {
@@ -120,7 +110,7 @@ console.log("main thread time: " + (endTime - startTime));
     });
     uploadFileData.forEach((pathItem) => {
       const fullPath = path.join(pathItem.filePath, pathItem.filename);
-      console.log(fullPath);
+      // console.log(fullPath);
       archive.append(fs.createReadStream(fullPath), {
         name: pathItem.filename,
       });

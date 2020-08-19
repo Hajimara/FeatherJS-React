@@ -121,6 +121,11 @@ module.exports = (app) => {
                 'Content-Type': 'video/x-matroska',
                 'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
               });
+            }else if(String(req.query.serverFileName).includes('.xml')){
+              _res.writeHead(200, {
+                'Content-Type': 'application/xml',
+                'Content-Disposition': `attachment; filename= ${encodeURIComponent(req.query.serverFileName)}`
+              });
             }else{
               _res.writeHead(200, {
                 'Content-Type': 'application/octet-stream',

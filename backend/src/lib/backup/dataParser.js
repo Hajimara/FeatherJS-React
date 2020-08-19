@@ -15,17 +15,17 @@ const getClassType = require('../common/getClassType');
  * @returns {object} jsonDocument 서비스에서 불러온 데이터를 하나로 묶은 josn형식의 데이터
  */
 
-module.exports = async (dataStructure, res) => {
-  let rootKey;
+module.exports = async (dataStructure, req) => {
+  let rootKey= req.body.dataStructure[0];
   let jsonDocument;
   let filePath;
   let uploadFileData = [];
   try {
     for (let item in dataStructure) {
       // rootKey를 지정하기 위해 항상 객체 맨 위에 root document를 지정하여 파라미터로 전달해야함
-      if (!rootKey) {
-        rootKey = item;
-      }
+      // if (!rootKey) {
+      //   rootKey = item;
+      // }
       let documentObj = dataStructure[item];
       fileRecursion(documentObj, documentObj.length);
       if (rootKey !== item) {
@@ -39,6 +39,27 @@ module.exports = async (dataStructure, res) => {
         }
         let objResult;
         objResult = documentObj[n - 1];
+        // DB 컬렉션 중 file이 있을 경우 파일처리
+        if (item === "file" || item === "files") {
+          if (
+            JSON.stringify(documentObj).includes("[]") ||
+            JSON.stringify(documentObj).includes("null") ||
+            JSON.stringify(documentObj).includes("undefined")
+          ) {
+          } else {
+            documentObj.map((fileData, index) => {
+              filePath = path.join(
+                  __dirname,
+                  "/../../..",
+                  "/upload",)
+              uploadFileData.push({
+                filePath,
+                filename: fileData.serverFileName,
+              });
+            });
+          }
+        }
+        // 컬렉션 오브젝트 중 파일을 포함하고 있을경우 파일처리
         for (objItem in objResult) {
           obj = objResult[objItem];
           if (getClassType(obj) === "Array") {
@@ -50,12 +71,7 @@ module.exports = async (dataStructure, res) => {
               ) {
               } else {
                 obj.map((fileData, index) => {
-                  // filePath = path.join(
-                  //   __dirname,
-                  //   "/../../..",
-                  //   "/upload",
-                  //   fileData.serverFileName
-                  // );
+                  
                   filePath = path.join(
                       __dirname,
                       "/../../..",
@@ -64,19 +80,13 @@ module.exports = async (dataStructure, res) => {
                     filePath,
                     filename: fileData.serverFileName,
                   });
-                  // 파일
-                  // let binaryString = fs.readFileSync(filePath);
-                  // let mimetype = mime.getType(filePath);
-                  // // console.log(dataStructure[item][n-1][objItem][index]);
-                  // dataStructure[item][n - 1][objItem][
-                  //   index
-                  // ].binary = binaryString;
-                  // dataStructure[item][n - 1][objItem][index].mime = mimetype;
+                  
                 });
               }
             }
           }
         }
+        // 컬렉션 중 최상위 rootKey의 한 배열에 참조되는 컬렉션인 경우 처리
         if (rootKey !== item) {
           dataStructure[rootKey].forEach((rootItem) => {
             let arrayDoc = [];

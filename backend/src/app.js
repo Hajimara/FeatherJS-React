@@ -30,7 +30,7 @@ const app = express(feathers());
 app.use(cors());
 app.configure(configuration());
 
-app.use(express.urlencoded({ extended: true,limit : "50mb" ,parameterLimit: 1000000}));
+app.use(express.urlencoded({ extended: true,limit : "50mb" ,parameterLimit: 100000000}));
 app.use(express.json({limit : "50mb"}));
 app.use(express.errorHandler());
 

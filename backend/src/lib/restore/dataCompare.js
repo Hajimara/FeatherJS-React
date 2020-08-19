@@ -1,7 +1,7 @@
 const { ObjectID } = require("mongodb");
 /**
- * 이미 존재하는 데이터는 skip 하도록 하고
- * 존재하지 않는 데이터는 create서비스를 호출하도록
+ * DB에 존재하는 데이터는 skip 하도록 하고
+ * DB에 존재하지 않는 데이터는 create서비스를 호출하도록
  * 데이터를 선별하는 함수이다.
  */
 module.exports = (serviceData, jsonParserData) => {

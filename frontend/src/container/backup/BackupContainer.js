@@ -7,6 +7,7 @@ import { commentInitialize, findAllCommentThunk } from "../../modules/comment";
 import { restoreUploadThunk, restoreInitialize } from "../../modules/restore";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import FileSaver from "file-saver";
 import download from "downloadjs";
 
 function BackupContainer() {
@@ -81,23 +82,26 @@ function BackupContainer() {
           dispatch(findAllCommentThunk("backup"));
           dispatch(restoreInitialize());
           message.success("데이터를 복구하였습니다.");
+          setBoardIdList([]);
         } catch (error) {
           console.log(error);
           message.error(
             "데이터를 복구하는데 실패하였습니다. 관리자에게 문의해주세요"
           );
           dispatch(restoreInitialize());
+          setBoardIdList([]);
         }
       } else if(String(restoreUpload).includes("exist")) {
         message.warning("이미 존재하는 데이터입니다.");
         dispatch(restoreInitialize());
+        setBoardIdList([]);
       }else{
         message.error(
           "데이터를 복구하는데 실패하였습니다. 관리자에게 문의해주세요"
         );
+        setBoardIdList([]);
       }
     }
-    
   }, [dispatch, restoreUpload]);
 
   useEffect(() => {
@@ -119,8 +123,10 @@ function BackupContainer() {
 
   const onSubmit = () => {
     let formData = new FormData();
+    let dataStructure =  ['board','comment']
     formData.append("file", restoreFile[0]);
     formData.append("user", user._id);
+    formData.append("dataStructure", dataStructure);
     try {
       dispatch(restoreUploadThunk(formData));
     } catch (error) {
@@ -137,11 +143,11 @@ function BackupContainer() {
     try {
       const options = {
         method: "POST",
-        responseType: "blob",
+        // responseType: "blob",
         headers: {
           Authorization: "Bearer " + cookies.get("access_token"),
         },
-        data: { user: user._id, selectBoardId: boardIdList },
+        data: { user: user._id, selectBoardId: boardIdList, dataStructure: ['board','comment'] },
         url: `http://localhost:3030/backup/`,
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
@@ -149,20 +155,43 @@ function BackupContainer() {
       };
         // timeout: 60*15*1000,
 
-      await axios(options).then((response) => {
+      await axios(options).then(async (response) => {
         console.log(response);
-        // download(response.data, "backup.zip", "application/zip");
-
-        const url = window.URL.createObjectURL(
-          new Blob([response.data], { type: "application/zip" })
-        );
+        console.log('response');
+        // var blob = new Blob([response.data], {type: "application/zip"});
+        // FileSaver.saveAs(blob, "backup.zip");
+        // const url = window.URL.createObjectURL(
+        //   new Blob([response.data], { type: "application/zip" })
+        // );
+        // const link = document.createElement("a");
+        // link.href = url;
+        // link.setAttribute("download", "backup.zip");
+        // document.body.appendChild(link);
+        // link.click();
+        cookies.remove('download')
+                cookies.remove('fileName')
+        setBackupLoading(false);
+      message.success('백업파일을 다운로드합니다.')
         const link = document.createElement("a");
-        link.href = url;
+        link.href = response.data;
         link.setAttribute("download", "backup.zip");
         document.body.appendChild(link);
         link.click();
-        setBackupLoading(false);
-      message.success('백업파일을 다운로드합니다.')
+        let downloadDivision = false;
+        setTimeout(async()=>{
+          let fileName = cookies.get('fileName');
+          let download = cookies.get('download');
+          if(download === 'success'){
+            await axios.delete(`http://localhost:3030/backup?fileName=${fileName}`).then(()=>{
+              console.log('remove server file ');
+              cookies.remove('download')
+              cookies.remove('fileName')
+            })
+          }else{
+            message.error('서버와의 통신이 불안정합니다. 다시 시도해주세요.')
+          }
+        },2000)
+       
     }).catch((error)=>{
       if(String(error).includes('500')){
         console.log(error);
