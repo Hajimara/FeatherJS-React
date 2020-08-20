@@ -46,6 +46,7 @@ module.exports = async (req, res, next) => {
   // myWorker9 = new Worker(workerPath);
   // myWorker10 = new Worker(workerPath);
 
+  // 처음 백업 요청 시 Post로 받기
   if (req.method === "POST") {
     let startTime = process.uptime();
     let user = await req.app.service("user").get(req.body.user, {
@@ -60,7 +61,6 @@ module.exports = async (req, res, next) => {
         description: "There is no data to be backed up.",
       });
     } else {
-      // const stringData = await jsonToStringify(parserData.jsonDocument);
       const fileInfo = await fileConverter(parserData.jsonDocument);
       await createCompressedFile(
         parserData.uploadFileData,
@@ -68,12 +68,6 @@ module.exports = async (req, res, next) => {
         res,
         startTime
       );
-      // await createCompressedFileCLI(
-      //   parserData.uploadFileData,
-      //   fileInfo,
-      //   res,
-      //   startTime
-      // );
     }
 
     //   if (fileExists && stream) {
@@ -117,6 +111,8 @@ module.exports = async (req, res, next) => {
     return;
   }
 
+  // 클라이언트가 서버에서 받은 URL을 통해 다시 GET요청을 받았을 때 
+  // 삭제요청에 필요한 쿠키 정보들과 zip파일을 보내준다.
   if (req.method === "GET") {
     console.log('file downlaod');
     // let zipFilePath = path.join(
@@ -137,17 +133,25 @@ module.exports = async (req, res, next) => {
     stream = fs.createReadStream(zipFilePath);
     console.log(fileExists, mimetype);
     try {
+      if(fileExists){
+        res.append("Set-Cookie",`download=success;`);
+        res.append('Set-Cookie', `fileName=${req.query.fileName}`);
+  
+        await res.sendFile(
+          zipFilePath,
+          { headers: { "Content-Type": mimetype } },
+          () => {
+            console.log("file send end");
+          }
+        );
+      }else{
+        res.append("Set-Cookie",`download=failure;`);
+        return res.status(500).send({
+          error: "File not found",
+          description: "File not found.",
+        });
+      }
       
-      res.append("Set-Cookie",`download=success;`);
-      res.append('Set-Cookie', `fileName=${req.query.fileName}`);
-
-      await res.sendFile(
-        zipFilePath,
-        { headers: { "Content-Type": mimetype } },
-        () => {
-          console.log("file send end");
-        }
-      );
     } catch (error) {
       console.log(error);
     }

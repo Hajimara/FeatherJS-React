@@ -10,34 +10,60 @@ module.exports = async (req, user) => {
   let comment = null;
   let getServiceList = req.body.dataStructure;
   let dataStructure = {};
-
+  let rootKey = getServiceList[0];
   try {
     console.log(getServiceList);
     if (
       String(req.originalUrl).includes("/backup") &&
       req.body.selectBoardId.length > 0
     ) {
+      // dataStructure의 배열 0번째는 항상 rootKey를 파라미터로 받는다.
+      // rootKey 이외의 컬렉션은 rootKey의 _id를 가지고 있는지 검색한다.
       const getSelectServicePromise = async (serviceItem) => {
-        return new Promise(async (resolve, reject) => {
-          let result = await req.app.service(serviceItem).find({
-            user,
-            query: {
-              $sort: {
-                createdAt: -1,
+        if(rootKey === serviceItem) {
+          return new Promise(async (resolve, reject) => {
+            let result = await req.app.service(serviceItem).find({
+              user,
+              query: {
+                $sort: {
+                  createdAt: -1,
+                },
+                _id: {
+                  $in: req.body.selectBoardId,
+                },
               },
-              _id: {
-                $in: req.body.selectBoardId,
-              },
-            },
+            });
+            console.log(result);
+            if (result) {
+              dataStructure[serviceItem] = result.data;
+              resolve(result);
+            } else {
+              reject;
+            }
           });
-          console.log(result);
-          if (result) {
-            dataStructure[serviceItem] = result.data;
-            resolve(result);
-          } else {
-            reject;
-          }
-        });
+        }else{
+          return new Promise(async (resolve, reject) => {
+            let result = await req.app.service(serviceItem).find({
+              user,
+              query: {
+                $sort: {
+                  createdAt: -1,
+                },
+                board: {
+                  $in: req.body.selectBoardId,
+                },
+              },
+            });
+            console.log(result);
+            if (result) {
+              dataStructure[serviceItem] = result.data;
+              resolve(result);
+            } else {
+              reject;
+            }
+          });
+        }
+       
       };
       await Promise.all(
         getServiceList.map((serviceItem) =>

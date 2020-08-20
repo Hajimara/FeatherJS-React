@@ -71,7 +71,8 @@ module.exports = async (dataStructure, req) => {
               ) {
               } else {
                 obj.map((fileData, index) => {
-                  
+                  // createCompressedFile.js 함수에서 파일 처리를 하기 위해
+                  // 파일에 대한 경로와 이름을 변수에 따로 담아준다.
                   filePath = path.join(
                       __dirname,
                       "/../../..",
@@ -86,7 +87,8 @@ module.exports = async (dataStructure, req) => {
             }
           }
         }
-        // 컬렉션 중 최상위 rootKey의 한 배열에 참조되는 컬렉션인 경우 처리
+        // 컬렉션 중 rootKey의 한 배열에 참조되는 컬렉션인 경우 조인 처리
+        // 이 후 기존 dataStructure에 존재하는 컬렉션을 삭제한다.
         if (rootKey !== item) {
           dataStructure[rootKey].forEach((rootItem) => {
             let arrayDoc = [];

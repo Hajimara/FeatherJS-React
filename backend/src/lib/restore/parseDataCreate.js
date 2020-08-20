@@ -16,11 +16,9 @@ module.exports = (user, req, compareData) => {
             provider: "rest",
             headers: req.headers,
           });
-          // console.log(result);
         })();
     });
   }
-
   return;
 };
 

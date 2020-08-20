@@ -17,7 +17,9 @@ module.exports = async (data) => {
   }
   async function wirteToFile() {
     return new Promise((resolve, reject) => {
+      // 파일을 어디다 쓸 것인지 정의한다.
       let output = fs.createWriteStream(fileFullPath);
+      // 가공한 data를 json형식의 string으로 json파일에 써준다.
       output.write(JSON.stringify(data), "utf-8");
       output.end();
 

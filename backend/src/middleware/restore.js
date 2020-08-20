@@ -75,6 +75,7 @@ module.exports = async (req, res, next) => {
     let jsonParserData = await parserJSONData(jsonData);
     let compareData = dataCompare(serviceData, jsonParserData);
     let division = false;
+    // 만약 복구할 데이터가 없다면 exist 메세지를 클라이언트에게 보내게 된다.
       for (const key in compareData) {
       if (compareData[key].length > 0) {
         division = true;
